@@ -7,6 +7,7 @@
     "keywords": ["framework", "tools"],
     "category": "Framework",
 	"dependencies": {
-        "com.unity.mathematics": "1.0.1"
+        "com.unity.mathematics": "1.0.1",
+		"com.unity.editorcoroutines": "0.0.2-preview.1"
     }
 }
