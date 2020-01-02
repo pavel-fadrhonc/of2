@@ -6,6 +6,4 @@
     "description": "Collection of tools I'm using for games development.",
     "keywords": ["framework", "tools"],
     "category": "Framework",
-    "dependencies": {
-    }
 }
