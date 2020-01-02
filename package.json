@@ -6,4 +6,7 @@
     "description": "Collection of tools I'm using for games development.",
     "keywords": ["framework", "tools"],
     "category": "Framework"
+	"dependencies": {
+        "com.unity.mathematics": "1.0.1"
+    }
 }
