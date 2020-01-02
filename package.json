@@ -1,0 +1,11 @@
+{
+    "name": "com.oakus.frameworks.of2",
+    "displayName": "Oak Framework 2",
+    "version": "0.1",
+    "unity": "2019.2",
+    "description": "Collection of tools I'm using for games development.",
+    "keywords": ["framework", "tools"],
+    "category": "Framework",
+    "dependencies": {
+    }
+}
