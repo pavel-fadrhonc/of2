@@ -1034,14 +1034,14 @@ namespace OakFramework2.Curves.Unity.Editor
         static void DrawGizmosLoRes(HermiteCurve herm, GizmoType gizmoType)
         {
             DrawCurve(herm, 64, Color.white, false);
-            Debug.Log("[DrawGizmo(GizmoType.NonSelected)] finally works!");
+            //Debug.Log("[DrawGizmo(GizmoType.NonSelected)] finally works!");
         }
     
         [DrawGizmo(GizmoType.InSelectionHierarchy | GizmoType.Selected | GizmoType.Active | GizmoType.Pickable | GizmoType.NotInSelectionHierarchy)]
         static void DrawGizmosHiRes(HermiteCurve herm, GizmoType gizmoType)
         {
             Debug.Log("[DrawGizmo(GizmoType.Selected)] finally works!");
-            DrawCurve(herm, 1024, Color.white, false);
+            //DrawCurve(herm, 1024, Color.white, false);
         }
         
         void ShowClosestPointOnClosedCurve(SerializedProperty points)
