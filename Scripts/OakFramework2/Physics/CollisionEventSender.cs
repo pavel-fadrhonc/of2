@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace o2f.Physics
 {
@@ -9,6 +11,8 @@ namespace o2f.Physics
 
     public class CollisionEventSender : MonoBehaviour
     {
+        public bool DisabledCollidersWithThis { get; set; } = true;
+        
         public event CollisionEventHandler CollisionEnterEvent;
         public event CollisionEventHandler CollisionStayEvent;
         public event CollisionEventHandler CollisionExitEvent;
@@ -23,7 +27,34 @@ namespace o2f.Physics
         
         public event TriggerEvent2DHandler TriggerEnter2DEvent;
         public event TriggerEvent2DHandler TriggerStay2DEvent;
-        public event TriggerEvent2DHandler TriggerExit2DEvent;        
+        public event TriggerEvent2DHandler TriggerExit2DEvent;
+
+        private List<Collider> _colliders;
+        private List<Collider2D> _colliders2D;
+        
+        private void Awake()
+        {
+            _colliders = new List<Collider>(GetComponents<Collider>());
+            _colliders2D = new List<Collider2D>(GetComponents<Collider2D>());
+        }
+
+        private void OnEnable()
+        {
+            if (DisabledCollidersWithThis)
+            {
+                _colliders.ForEach(c => c.enabled = true);
+                _colliders2D.ForEach(c => c.enabled = true);
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (DisabledCollidersWithThis)
+            {
+                _colliders.ForEach(c => c.enabled = false);
+                _colliders2D.ForEach(c => c.enabled = false);
+            }
+        }
 
         protected virtual void OnCollisionEnter(Collision collision)
         {
