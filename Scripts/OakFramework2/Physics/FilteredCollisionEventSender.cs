@@ -5,10 +5,18 @@ namespace o2f.Physics
 {
     public class FilteredCollisionEventSender : CollisionEventSender
     {
-        [Tooltip("Object is considered for collision if it passes layer filter OR tag filter")]
+        public enum EFilterOperation
+        {
+            Or,
+            And
+        }
+        
+        [SerializeField]
+        protected EFilterOperation _filterOperation;
+        [Tooltip("Object is considered for collision if it passes layer filter AND/OR tag filter")]
         [SerializeField]
         protected LayerMask FilterLayers;
-        [Tooltip("Object is considered for collision if it passes layer filter OR tag filter")]
+        [Tooltip("Object is considered for collision if it passes layer filter AND/OR tag filter")]
         [SerializeField]
         protected string[] filterTags;
 
@@ -86,18 +94,25 @@ namespace o2f.Physics
 
         private bool FilterObject(GameObject go)
         {
-            bool hasTagOrLayer = false;
+            bool hasTag = false;
+            bool hasLayer = ((1 << go.layer) & FilterLayers.value) != 0;
 
-            if (((1 << go.layer) & FilterLayers.value) != 0)
-                hasTagOrLayer = true;
-
-            for (int i = 0; i < filterTags.Length; i++)
+            if (_filterOperation == EFilterOperation.And && hasLayer ||
+                _filterOperation == EFilterOperation.Or)
             {
-                if (go.CompareTag(filterTags[i]))
-                    hasTagOrLayer = true;
+                for (int i = 0; i < filterTags.Length; i++)
+                {
+                    if (go.CompareTag(filterTags[i]))
+                        hasTag = true;
+                }
             }
 
-            return hasTagOrLayer;
+            if (_filterOperation == EFilterOperation.And)
+            {
+                return hasTag && hasLayer;
+            }
+             
+            return hasTag || hasLayer;
         }
     }
 }
