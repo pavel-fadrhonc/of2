@@ -41,6 +41,8 @@ namespace Zenject
         }
 #endif
 
+		public List<SignalSubscription> Subscriptions => _subscriptions;
+
         public int TickPriority
         {
             get; private set;
@@ -171,6 +173,10 @@ namespace Zenject
         public void Remove(SignalSubscription subscription)
         {
             _subscriptions.RemoveWithConfirm(subscription);
+        }
+
+        public class Factory : PlaceholderFactory<SignalDeclarationBindInfo, SignalDeclaration>
+        {
         }
     }
 }

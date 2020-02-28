@@ -6,7 +6,7 @@ namespace Zenject.Asteroids
     public class GameInstaller : MonoInstaller
     {
         [Inject]
-        Settings _settings;
+        Settings _settings = null;
 
         public override void InstallBindings()
         {
@@ -110,8 +110,8 @@ namespace Zenject.Asteroids
             // If for example we wanted to ensure that AsteroidManager.Initialize
             // always gets called before GameController.Initialize (and similarly for Tick)
             // Then we could do the following:
-            Container.BindExecutionOrder<AsteroidManager>(-10);
-            Container.BindExecutionOrder<GameController>(-20);
+            Container.BindExecutionOrder<AsteroidManager>(-20);
+            Container.BindExecutionOrder<GameController>(-10);
 
             // Note that they will be disposed of in the reverse order given here
         }
