@@ -51,9 +51,18 @@ namespace Zenject
         {
             [Inject] private UnityEngine.Object prefab;
             [Inject] private bool fromGameObjectContextOnPrefab;
-            
+
+            private bool _validateRun = false;
+
             public override void InstallBindings()
             {
+                if (prefab == null)
+                { // just to shut the validator
+                    Container.BindMemoryPool<TContract, Pool>().FromNewComponentOnNewGameObject();
+                    Debug.LogWarning("No prefab injected in PoolInstaller.");
+                    return;
+                }
+                
                 if (fromGameObjectContextOnPrefab)
                     Container.BindMemoryPool<TContract, Pool>().FromSubContainerResolve().ByNewContextPrefab(prefab);
                 else
@@ -110,6 +119,13 @@ namespace Zenject
             
             public override void InstallBindings()
             {
+                if (prefab == null)
+                { // just to shut the validator
+                    Container.BindMemoryPool<TContract, Pool>().FromNewComponentOnNewGameObject();
+                    Debug.LogWarning("No prefab injected in PoolInstaller.");
+                    return;
+                }
+                
                 if (fromGameObjectContextOnPrefab)
                     Container.BindMemoryPool<TContract, Pool>().FromSubContainerResolve().ByNewContextPrefab(prefab);
                 else
@@ -166,11 +182,17 @@ namespace Zenject
             
             public override void InstallBindings()
             {
+                if (prefab == null)
+                { // just to shut the validator
+                    Container.BindMemoryPool<TContract, Pool>().FromNewComponentOnNewGameObject();
+                    Debug.LogWarning("No prefab injected in PoolInstaller.");
+                    return;
+                }
+                
                 if (fromGameObjectContextOnPrefab)
                     Container.BindMemoryPool<TContract, Pool>().FromSubContainerResolve().ByNewContextPrefab(prefab);
                 else
                     Container.BindMemoryPool<TContract, Pool>().FromComponentInNewPrefab(prefab);
-
             }
         }
     }        
@@ -223,11 +245,17 @@ namespace Zenject
             
             public override void InstallBindings()
             {
+                if (prefab == null)
+                { // just to shut the validator
+                    Container.BindMemoryPool<TContract, Pool>().FromNewComponentOnNewGameObject();
+                    Debug.LogWarning("No prefab injected in PoolInstaller.");
+                    return;
+                }
+                
                 if (fromGameObjectContextOnPrefab)
                     Container.BindMemoryPool<TContract, Pool>().FromSubContainerResolve().ByNewContextPrefab(prefab);
                 else
                     Container.BindMemoryPool<TContract, Pool>().FromComponentInNewPrefab(prefab);
-
             }
         }
     }      
@@ -280,6 +308,13 @@ namespace Zenject
             
             public override void InstallBindings()
             {
+                if (prefab == null)
+                { // just to shut the validator
+                    Container.BindMemoryPool<TContract, Pool>().FromNewComponentOnNewGameObject();
+                    Debug.LogWarning("No prefab injected in PoolInstaller.");
+                    return;
+                }
+                
                 if (fromGameObjectContextOnPrefab)
                     Container.BindMemoryPool<TContract, Pool>().FromSubContainerResolve().ByNewContextPrefab(prefab);
                 else
