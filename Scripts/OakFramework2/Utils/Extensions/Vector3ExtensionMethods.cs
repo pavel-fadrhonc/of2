@@ -45,4 +45,19 @@ public static class Vector3ExtensionMethods
     {
         return new Vector2(vect3.x, vect3.z);
     }
+
+    public static Vector3 WithX(this Vector3 vector3, float x)
+    {
+        return new Vector3(x, vector3.y, vector3.z);
+    }
+    
+    public static Vector3 WithY(this Vector3 vector3, float y)
+    {
+        return new Vector3(vector3.x, y, vector3.z);
+    }
+    
+    public static Vector3 WithZ(this Vector3 vector3, float z)
+    {
+        return new Vector3(vector3.x, vector3.y, z);
+    }        
 }

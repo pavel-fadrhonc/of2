@@ -3015,6 +3015,76 @@ namespace Zenject
             return BindFactoryInternal<
                 TParam1, TContract, TFactory, TFactory>();
         }
+        
+        public void BindNameBasedPoolablePrefabFactory<TContract, TPlaceHolderFactory>()
+            where TContract : Component, IPoolable<IMemoryPool> 
+            where TPlaceHolderFactory : PlaceholderFactory<UnityEngine.Object, TContract>
+        {
+            BindFactory<UnityEngine.Object, TContract, TPlaceHolderFactory>()
+                .FromFactory<PrefabFactoryNameBased<TContract>>();
+                
+            BindFactory<UnityEngine.Object,
+                    PrefabFactoryNameBased<TContract>.Pool,
+                    PrefabFactoryNameBased<TContract>.PoolFactory>()
+                .FromSubContainerResolve()
+                .ByInstaller<PrefabFactoryNameBased<TContract>.PoolInstaller>();             
+        }
+        
+        public void BindNameBasedPoolablePrefabFactory<TParam1, TContract, TPlaceHolderFactory>()
+            where TContract : Component, IPoolable<TParam1, IMemoryPool> 
+            where TPlaceHolderFactory : PlaceholderFactory<UnityEngine.Object, TParam1, TContract>
+        {
+            BindFactory<UnityEngine.Object, TParam1, TContract, TPlaceHolderFactory>()
+                .FromFactory<PrefabFactoryNameBased<TParam1, TContract>>();
+                
+            BindFactory<UnityEngine.Object, 
+                    PrefabFactoryNameBased<TParam1, TContract>.Pool,
+                    PrefabFactoryNameBased<TParam1, TContract>.PoolFactory>()
+                .FromSubContainerResolve()
+                .ByInstaller<PrefabFactoryNameBased<TParam1, TContract>.PoolInstaller>();             
+        } 
+        
+        public void BindNameBasedPoolablePrefabFactory<TParam1, TParam2, TContract, TPlaceHolderFactory>()
+            where TContract : Component, IPoolable<TParam1, TParam2, IMemoryPool> 
+            where TPlaceHolderFactory : PlaceholderFactory<UnityEngine.Object, TParam1, TParam2, TContract>
+        {
+            BindFactory<UnityEngine.Object, TParam1, TParam2, TContract, TPlaceHolderFactory>()
+                .FromFactory<PrefabFactoryNameBased<TParam1, TParam2, TContract>>();
+                
+            BindFactory<UnityEngine.Object, 
+                    PrefabFactoryNameBased<TParam1, TParam2, TContract>.Pool,
+                    PrefabFactoryNameBased<TParam1, TParam2, TContract>.PoolFactory>()
+                .FromSubContainerResolve()
+                .ByInstaller<PrefabFactoryNameBased<TParam1, TParam2, TContract>.PoolInstaller>();             
+        }    
+        
+        public void BindNameBasedPoolablePrefabFactory<TParam1, TParam2, TParam3, TContract, TPlaceHolderFactory>()
+            where TContract : Component, IPoolable<TParam1, TParam2, TParam3, IMemoryPool> 
+            where TPlaceHolderFactory : PlaceholderFactory<UnityEngine.Object, TParam1, TParam2, TParam3, TContract>
+        {
+            BindFactory<UnityEngine.Object, TParam1, TParam2, TParam3, TContract, TPlaceHolderFactory>()
+                .FromFactory<PrefabFactoryNameBased<TParam1, TParam2, TParam3, TContract>>();
+                
+            BindFactory<UnityEngine.Object, 
+                    PrefabFactoryNameBased<TParam1, TParam2, TParam3, TContract>.Pool,
+                    PrefabFactoryNameBased<TParam1, TParam2, TParam3, TContract>.PoolFactory>()
+                .FromSubContainerResolve()
+                .ByInstaller<PrefabFactoryNameBased<TParam1, TParam2, TParam3, TContract>.PoolInstaller>();             
+        }      
+        
+        public void BindNameBasedPoolablePrefabFactory<TParam1, TParam2, TParam3, TParam4, TContract, TPlaceHolderFactory>()
+            where TContract : Component, IPoolable<TParam1, TParam2, TParam3, TParam4, IMemoryPool> 
+            where TPlaceHolderFactory : PlaceholderFactory<UnityEngine.Object, TParam1, TParam2, TParam3, TParam4, TContract>
+        {
+            BindFactory<UnityEngine.Object, TParam1, TParam2, TParam3, TParam4, TContract, TPlaceHolderFactory>()
+                .FromFactory<PrefabFactoryNameBased<TParam1, TParam2, TParam3, TParam4, TContract>>();
+                
+            BindFactory<UnityEngine.Object, 
+                    PrefabFactoryNameBased<TParam1, TParam2, TParam3, TParam4, TContract>.Pool,
+                    PrefabFactoryNameBased<TParam1, TParam2, TParam3, TParam4, TContract>.PoolFactory>()
+                .FromSubContainerResolve()
+                .ByInstaller<PrefabFactoryNameBased<TParam1, TParam2, TParam3, TParam4, TContract>.PoolInstaller>();             
+        }
 
         public FactoryToChoiceIdBinder<TParam1, TContract> BindFactoryCustomInterface<TParam1, TContract, TFactoryConcrete, TFactoryContract>()
             where TFactoryConcrete : PlaceholderFactory<TParam1, TContract>, TFactoryContract
