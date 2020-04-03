@@ -39,11 +39,16 @@ namespace Zenject
         readonly FixedTickablesTaskUpdater _fixedUpdater = new FixedTickablesTaskUpdater();
         readonly LateTickablesTaskUpdater _lateUpdater = new LateTickablesTaskUpdater();
 
+        readonly TickableManager _parent;
+
         bool _isPaused;
 
         [Inject]
-        public TickableManager()
+        public TickableManager(
+                [InjectOptional(Source = InjectSources.Parent)]
+                TickableManager parent)
         {
+            _parent = parent;
         }
 
 #if ZEN_SIGNALS_ADD_UNIRX
@@ -67,12 +72,12 @@ namespace Zenject
         {
             get { return _tickables; }
         }
-
+        
         public bool IsPaused
         {
-            get { return _isPaused; }
-            set { _isPaused = value; }
-        }
+            get => (_parent != null && _parent.IsPaused) || _isPaused;
+            set => _isPaused = value;
+        }        
 
         [Inject]
         public void Initialize()
