@@ -40,6 +40,25 @@ namespace Zenject
             return new SignalCopyBinder(bindInfo);
         }
 
+        public SignalCopyBinder ToCommand<TCommand>() where TCommand : Command<TSignal>
+        {
+            Assert.That(!_bindStatement.HasFinalizer);
+            _bindStatement.SetFinalizer(new NullBindingFinalizer());
+
+            _container.BindMemoryPool<TCommand, Pool<TCommand, TSignal>>();
+
+            var bindInfo = _container.Bind<IDisposable>()
+                .To<SignalCommandCallbackWrapper<TCommand, TSignal>>()
+                .AsCached()
+                // Note that there's a reason we don't just make SignalCallbackWrapper have a generic
+                // argument for signal type - because when using struct type signals it throws
+                // exceptions on AOT platforms
+                .WithArguments(_signalBindInfo)
+                .NonLazy().BindInfo;
+
+            return new SignalCopyBinder(bindInfo);
+        }
+
         public SignalCopyBinder ToMethod(Action callback)
         {
             return ToMethod(signal => callback());
