@@ -23,4 +23,9 @@ public static class Vector2ExtensionMethods
         outputOnCircle = vect / outputOnCircle.magnitude;
         return outputOnCircle;
     }   
+	
+	public static float Random(this Vector2 vect)
+	{
+		return UnityEngine.Random.Range(vect.x, vect.y);
+	}	
 }

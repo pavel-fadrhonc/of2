@@ -27,6 +27,23 @@ namespace Zenject
             AddTaskInternal(task, priority);
         }
 
+        public bool HasTask(TTask task)
+        {
+            foreach (var task_ in _tasks)
+            {
+                if (task_.Task.GetType() == task.GetType())
+                    return true;
+            }            
+            
+            foreach (var queuedTask in _queuedTasks)
+            {
+                if (queuedTask.Task.GetType() == task.GetType())
+                    return true;
+            }
+
+            return false;
+        }
+
         void AddTaskInternal(TTask task, int priority)
         {
             Assert.That(!AllTasks.Select(x => x.Task).ContainsItem(task),

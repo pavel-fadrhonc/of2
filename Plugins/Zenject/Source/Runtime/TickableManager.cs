@@ -144,6 +144,11 @@ namespace Zenject
             }
         }
 
+        public bool Has(ITickable tickable)
+        {
+            return _updater.HasTask(tickable);
+        }
+
         public void Add(ITickable tickable, int priority)
         {
             _updater.AddTask(tickable, priority);

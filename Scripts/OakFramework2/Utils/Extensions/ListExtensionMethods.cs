@@ -51,7 +51,7 @@ public static class ListExtensionMethods
 
     public static T Random<T>(this IList<T> list)
     {
-        return list[UnityRandom.Range(0, list.Count)];
+        return list.Count > 0 ? list[UnityRandom.Range(0, list.Count)] : default;
     }
 }
 
