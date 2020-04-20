@@ -21,6 +21,8 @@ namespace Utils
 
         public bool Contains(T item) => m_Source.Contains(item);
 
+        public int IndexOf(T item) => m_Source.IndexOf(item);
+
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
             => throw new NotSupportedException($"To avoid boxing, do not cast {nameof(NoAllocReadOnlyCollection<T>)} to IEnumerable<T>.");
         IEnumerator IEnumerable.GetEnumerator()
