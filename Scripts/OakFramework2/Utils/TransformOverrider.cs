@@ -6,6 +6,7 @@ namespace OakFramework2.Utils
     /// <summary>
     /// Keeps values set on start or set referenced
     /// </summary>
+    [ExecuteInEditMode]
     public class TransformOverrider : MonoBehaviour
     {
         public enum EOverrideMode
@@ -29,7 +30,7 @@ namespace OakFramework2.Utils
         [SerializeField] private EOverrideMode rotationOverrideMode;
         [SerializeField] private Space rotationSpace;
         [DrawIf("rotationOverrideMode", EOverrideMode.SetPrefedefined)]
-        [SerializeField] private Quaternion rotationReferenceValue;
+        [SerializeField] private Vector3 rotationReferenceValueEuler;
         
         [Header("Scale")]
         [SerializeField] private EOverrideMode scaleOverrideMode;
@@ -83,7 +84,7 @@ namespace OakFramework2.Utils
                     rotation = startRotation;
                     break;
                 case EOverrideMode.SetPrefedefined:
-                    rotation = rotationReferenceValue;
+                    rotation = Quaternion.Euler(rotationReferenceValueEuler);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
