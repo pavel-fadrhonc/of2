@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Utils;
 using UnityRandom = UnityEngine.Random;
 
 public static class ListExtensionMethods
@@ -52,6 +53,11 @@ public static class ListExtensionMethods
     public static T Random<T>(this IList<T> list)
     {
         return list.Count > 0 ? list[UnityRandom.Range(0, list.Count)] : default;
+    }
+
+    public static NoAllocReadOnlyCollection<T> ToReadOnlyNoAlloc<T>(this List<T> list)
+    {
+        return new NoAllocReadOnlyCollection<T>(list);
     }
 }
 
