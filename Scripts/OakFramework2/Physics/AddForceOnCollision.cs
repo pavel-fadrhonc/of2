@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#pragma warning disable 649
+
+using UnityEngine;
 using System.Collections;
 using OakFramework2.BaseMono;
 
@@ -45,7 +47,8 @@ namespace o2f.Physics
 
         private bool m_HandsOffActive = false;
 
-        protected void Awake()
+        
+        protected override void Awake()
         {
             m_eventSender = GetComponent<FilteredCollisionEventSender>();
             m_eventSender.CollisionEnterEvent += OnCollisionEnterEvent;

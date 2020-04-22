@@ -8,6 +8,7 @@ namespace Zenject
     public interface IPlaceholderFactory : IValidatable
     {
     }
+    
 
     // Placeholder factories can be used to choose a creation method in an installer, using FactoryBinder
     public abstract class PlaceholderFactoryBase<TValue> : IPlaceholderFactory

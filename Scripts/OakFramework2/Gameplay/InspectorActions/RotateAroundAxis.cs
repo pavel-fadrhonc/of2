@@ -11,7 +11,7 @@ namespace Animation
 
         private void Update()
         {
-            transform.RotateAround(axis, speed * Time.deltaTime);
+            transform.Rotate(axis, speed * Time.deltaTime);
         }
     }
 }
