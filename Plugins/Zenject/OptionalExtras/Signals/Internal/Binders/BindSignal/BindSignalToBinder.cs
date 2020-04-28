@@ -50,13 +50,20 @@ namespace Zenject
             var bindInfo = _container.Bind<IDisposable>()
                 .To<SignalCommandCallbackWrapper<TCommand, TSignal>>()
                 .AsCached()
-                // Note that there's a reason we don't just make SignalCallbackWrapper have a generic
-                // argument for signal type - because when using struct type signals it throws
-                // exceptions on AOT platforms
                 .WithArguments(_signalBindInfo)
                 .NonLazy().BindInfo;
+            
+            _AotWorkAroundForBindCommand<TSignal, TCommand>();
 
             return new SignalCopyBinder(bindInfo);
+        }
+
+        /// Instead of not using structs in generic arguments of class I decided to do this workaround
+        /// By using the class all generic types get concretized and therefore not stripped on AOT platforms 
+        static void _AotWorkAroundForBindCommand<TSignal, TCommand>() where TCommand : Command<TSignal>
+        {
+            var pool = new Pool<TCommand, TSignal>();
+            var wrapper = new SignalCommandCallbackWrapper<TCommand, TSignal>(null, null, null, null);
         }
 
         public SignalCopyBinder ToMethod(Action callback)

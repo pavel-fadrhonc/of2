@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 
 namespace Zenject
 {
@@ -16,12 +16,15 @@ namespace Zenject
             SignalBus signalBus,
             TickableManager tickableManager)
         {
+            if (bindInfo == null)
+                return;
+            
             _signalType = bindInfo.SignalType;
             _identifier = bindInfo.Identifier;
             _signalBus = signalBus;
             _tickableManager = tickableManager;
             _commandPool = commandPool;
-
+            
             signalBus.SubscribeId(bindInfo.SignalType, _identifier, OnSignalFired);
         }
 
