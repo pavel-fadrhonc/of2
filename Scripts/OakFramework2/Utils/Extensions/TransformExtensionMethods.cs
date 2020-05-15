@@ -75,6 +75,13 @@ public static class TransformExtensionMethods
         values.LocalScale = src.localScale;
         return values;
     }
+    
+    public static void SetParentAndReset(Transform t1, Transform t2) {
+        t1.transform.SetParent(t2);
+        t1.localPosition = Vector3.zero;
+        t1.localEulerAngles = Vector3.zero;
+        t1.localScale = Vector3.one;
+    }
 
     public static void SetFromLocalTransformValues(this Transform dst, NNTransformValues values)
     {
