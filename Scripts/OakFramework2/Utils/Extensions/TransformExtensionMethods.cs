@@ -76,7 +76,7 @@ public static class TransformExtensionMethods
         return values;
     }
     
-    public static void SetParentAndReset(Transform t1, Transform t2) {
+    public static void SetParentAndReset(this Transform t1, Transform t2) {
         t1.transform.SetParent(t2);
         t1.localPosition = Vector3.zero;
         t1.localEulerAngles = Vector3.zero;
