@@ -19,7 +19,7 @@ namespace of2.Audio
             }
         }
 
-        public string AudioManagerProjectSpecificFolder = "Assets/Global/Audio/";
+        public string AudioManagerProjectSpecificFolder = "Assets/of2/Audio/";
         public string AudioManagerDataPrefabName = "AudioManagerData";
         public string AudioEnumName = "AudioList";
         

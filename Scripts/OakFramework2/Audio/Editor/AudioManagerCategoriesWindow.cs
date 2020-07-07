@@ -16,9 +16,18 @@ namespace of2.Audio
 {
     public class AudioManagerCategoriesWindow : EditorWindow
     {
-
+        public enum EFirstTimeSetupPhase
+        {
+            NoSetup,
+            FirstPhaseComplete,
+            SecondPhaseComplete
+        }
+        
+        
         [SerializeField] private TreeViewState m_TreeViewState;
 
+        private static EFirstTimeSetupPhase _firstTimeSetupPhase;
+        
         private AudioManagerTreeView m_TreeView;
         private SearchField m_SearchField;
 
@@ -43,6 +52,8 @@ namespace of2.Audio
         {
             //Show existing window instance. If one doesn't exist, make one.
             EditorWindow.GetWindow(typeof(AudioManagerCategoriesWindow));
+
+            _firstTimeSetupPhase = CheckMissingAssets();
         }
 
         [MenuItem("of2/Audio Manager/Print unused files")]
@@ -196,8 +207,7 @@ namespace of2.Audio
             File.WriteAllText(Path.Combine(Application.dataPath, filePath), sw.ToString());
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
-
-            // create a variant of installer prefab
+            
             string prefabGuid = AssetDatabase.FindAssets(AudioPreferences.AudioManagerInstallerPrefabName).FirstOrDefault();
             string prefabPath = AssetDatabase.GUIDToAssetPath(prefabGuid);
             prefabPath = prefabPath.Replace("Assets/", "");
@@ -206,7 +216,12 @@ namespace of2.Audio
 
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
             var instatiatedPrefab = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
-            instatiatedPrefab.AddComponent(Type.GetType(AudioPreferences.ProjectSpecificAudioManagerInstallerName + ", Assembly-CSharp") );
+
+            // create a variant of installer prefab
+            if (_firstTimeSetupPhase == EFirstTimeSetupPhase.FirstPhaseComplete)
+            {
+                instatiatedPrefab.AddComponent(Type.GetType(AudioPreferences.ProjectSpecificAudioManagerInstallerName + ", Assembly-CSharp") );
+            }
             
             // establish AudioManagerData reference
             var gam = instatiatedPrefab.GetComponentInChildren<GlobalAudioManager>();
@@ -261,13 +276,26 @@ namespace of2.Audio
 
         void OnGUI()
         {
-            var firstTimeSetup = GUILayout.Button("First time setup");
-            if (firstTimeSetup)
+            if (_firstTimeSetupPhase != EFirstTimeSetupPhase.SecondPhaseComplete)
             {
-                Save();
+                _firstTimeSetupPhase = CheckMissingAssets();
 
-                DoTheFirstTimeSetup();
-            }
+                bool shouldDoFirstTimeSetup = false;
+                
+                if (_firstTimeSetupPhase == EFirstTimeSetupPhase.NoSetup)
+                    shouldDoFirstTimeSetup = GUILayout.Button("First time setup phase one");
+                if (_firstTimeSetupPhase == EFirstTimeSetupPhase.FirstPhaseComplete)
+                    shouldDoFirstTimeSetup = GUILayout.Button("First time setup phase two");
+                
+                if (shouldDoFirstTimeSetup)
+                {
+                    Save();
+
+                    DoTheFirstTimeSetup();
+                }
+
+                return;
+            }            
             
             m_ListIncrIdx = 0;
             GUI.changed = false;
@@ -348,6 +376,26 @@ namespace of2.Audio
                 m_IsChanged = true;
                 EditorSceneManager.sceneSaving -= OnSceneSaved;
                 EditorSceneManager.sceneSaving += OnSceneSaved;
+            }
+        }
+
+        private static EFirstTimeSetupPhase CheckMissingAssets()
+        {
+            var p = AudioPreferences.Instance;
+            
+            string installerGuid = AssetDatabase.FindAssets(AudioPreferences.ProjectSpecificAudioManagerInstallerName).FirstOrDefault();
+            if (string.IsNullOrEmpty(installerGuid))
+                return EFirstTimeSetupPhase.NoSetup;
+            
+            string audioListGuid = AssetDatabase.FindAssets(p.AudioEnumName).FirstOrDefault();
+            string audioPrefabGuid = AssetDatabase.FindAssets(AudioPreferences.ProjectSpecificAudioManagerInstallerName).FirstOrDefault();
+            
+            var audioData = LoadOrCreateAudioData();
+            if (audioData.TreeData.DefaultBus != null)
+                return EFirstTimeSetupPhase.SecondPhaseComplete;
+            else
+            {
+                return EFirstTimeSetupPhase.FirstPhaseComplete;
             }
         }
 
@@ -964,7 +1012,7 @@ namespace of2.Audio
             return;
         }
 
-        private AudioManagerData LoadOrCreateAudioData()
+        private static AudioManagerData LoadOrCreateAudioData()
         {
             AudioPreferences p = AudioPreferences.Instance;
             AudioManagerData data = AssetDatabase.LoadAssetAtPath<AudioManagerData>(p.AudioManagerDataPrefabPath);
