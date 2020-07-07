@@ -37,16 +37,15 @@ namespace of2.Audio
         private int m_ListIncrIdx;
 
         private bool m_IsChanged = false;
-
-
-        [MenuItem("NapNok/Audio Manager/Manager...")]
+        
+        [MenuItem("of2/Audio Manager/Manager...")]
         public static void ShowWindow()
         {
             //Show existing window instance. If one doesn't exist, make one.
             EditorWindow.GetWindow(typeof(AudioManagerCategoriesWindow));
         }
 
-        [MenuItem("NapNok/Audio Manager/Print unused files")]
+        [MenuItem("of2/Audio Manager/Print unused files")]
         public static void PrintUnusedFiles()
         {
             AudioPreferences prefs = AudioPreferences.Instance;
