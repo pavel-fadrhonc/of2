@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable 649
+
+using System;
 using System.Collections.Generic;
 using ModestTree;
 using UnityEngine;
@@ -50,8 +52,6 @@ namespace Zenject
         public class PoolInstaller : Installer<PoolInstaller>
         {
             [Inject] private UnityEngine.Object prefab;
-
-            private bool _validateRun = false;
 
             public override void InstallBindings()
             {

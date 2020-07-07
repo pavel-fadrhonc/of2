@@ -10,7 +10,7 @@ namespace o2f.Physics
     /// Whenever this collides with something that has nontrigger collider and nonkinematic rigidbody applies extra force to it
     /// </summary>
     [RequireComponent(typeof(FilteredCollisionEventSender))]
-    public class AddForceOnCollision : o2fGameObject
+    public class AddForceOnCollision : of2GameObject
     {
         private enum eCollisionType
         {
