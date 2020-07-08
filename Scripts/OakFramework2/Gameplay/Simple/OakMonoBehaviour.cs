@@ -8,8 +8,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-public delegate void OakTask();
-
 public class OakMonoBehaviour : MonoBehaviour
 {
     protected Transform _thisTransform;

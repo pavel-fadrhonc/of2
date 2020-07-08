@@ -6,7 +6,7 @@ namespace OakFramework2.Utils
     /// <summary>
     /// For saving or loading Transform values
     /// </summary>
-    public struct NNTransformValues
+    public struct TransformValues
     {
         public Vector3 Position;
         public Quaternion Rotation;

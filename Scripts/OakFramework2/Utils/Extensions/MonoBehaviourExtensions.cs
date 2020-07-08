@@ -6,6 +6,8 @@
 //  <email>pavel.fadrhonc@xinity.com</email>
 //  <date>2/10/2014 4:24:30 PM</date>
 //  <summary></summary>
+
+using System;
 using UnityEngine;
 
 public static class MonoBehaviourExtensions
@@ -22,7 +24,7 @@ public static class MonoBehaviourExtensions
     /// <summary>
     /// Invokes the method methodtask in time seconds.
     /// </summary>
-    public static void Invoke(this MonoBehaviour mono, OakTask task, float time)
+    public static void Invoke(this MonoBehaviour mono, Action task, float time)
     {
         mono.Invoke(task.Method.Name, time);
     }
@@ -31,7 +33,7 @@ public static class MonoBehaviourExtensions
     /// Invokes the method task in time seconds.
     /// After the first invocation repeats calling that function every repeatRate seconds.
     /// </summary>
-    public static void InvokeRepeating(this MonoBehaviour mono, OakTask task, float time, float repeatRate)
+    public static void InvokeRepeating(this MonoBehaviour mono, Action task, float time, float repeatRate)
     {
         mono.InvokeRepeating(task.Method.Name, time, repeatRate);
     }
@@ -39,7 +41,7 @@ public static class MonoBehaviourExtensions
     /// <summary>
     /// Cancels all Invoke calls task on this behaviour.
     /// </summary>
-    public static void CancelInvoke(this MonoBehaviour mono, OakTask task)
+    public static void CancelInvoke(this MonoBehaviour mono, Action task)
     {
         mono.CancelInvoke(task.Method.Name);
     }
@@ -47,7 +49,7 @@ public static class MonoBehaviourExtensions
     /// <summary>
     /// Is any invoke of task pending?
     /// </summary>
-    public static bool IsInvoking(this MonoBehaviour mono, OakTask task)
+    public static bool IsInvoking(this MonoBehaviour mono, Action task)
     {
         return mono.IsInvoking(task.Method.Name);
     }

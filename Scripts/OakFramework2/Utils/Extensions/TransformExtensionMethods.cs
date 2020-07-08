@@ -58,18 +58,18 @@ public static class TransformExtensionMethods
         dst.localScale = src.localScale;
     }
 
-    public static NNTransformValues GetLocalTransformValues(this Transform src)
+    public static TransformValues GetLocalTransformValues(this Transform src)
     {
-        NNTransformValues values = new NNTransformValues();
+        TransformValues values = new TransformValues();
         values.Position = src.localPosition;
         values.Rotation = src.localRotation;
         values.LocalScale = src.localScale;
         return values;
     }
 
-    public static NNTransformValues GetWorldTransformValues(this Transform src)
+    public static TransformValues GetWorldTransformValues(this Transform src)
     {
-        NNTransformValues values = new NNTransformValues();
+        TransformValues values = new TransformValues();
         values.Position = src.position;
         values.Rotation = src.rotation;
         values.LocalScale = src.localScale;
@@ -83,14 +83,14 @@ public static class TransformExtensionMethods
         t1.localScale = Vector3.one;
     }
 
-    public static void SetFromLocalTransformValues(this Transform dst, NNTransformValues values)
+    public static void SetFromLocalTransformValues(this Transform dst, TransformValues values)
     {
         dst.localPosition = values.Position;
         dst.localRotation = values.Rotation;
         dst.localScale = values.LocalScale;
     }
 
-    public static void SetFromWorldTransformValuesExceptScale(this Transform dst, NNTransformValues values)
+    public static void SetFromWorldTransformValuesExceptScale(this Transform dst, TransformValues values)
     {
         dst.position = values.Position;
         dst.rotation = values.Rotation;
