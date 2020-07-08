@@ -18,6 +18,7 @@ namespace o2f.Physics
         protected LayerMask FilterLayers;
         [Tooltip("Object is considered for collision if it passes layer filter AND/OR tag filter")]
         [SerializeField]
+        [TagSelector]
         protected string[] filterTags;
 
         protected override void OnCollisionEnter(Collision collision)
