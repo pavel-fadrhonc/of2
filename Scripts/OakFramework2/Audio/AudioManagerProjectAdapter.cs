@@ -14,9 +14,12 @@ namespace of2.Audio
     [Serializable]
     public class HelperPlayConfig
     {
-        public int soundEnum;
+        public int soundId;
         public float volume = 1f;
         public float delay = 0f;
+        public bool? In3D;
+        public Vector3? position;
+        public Transform trackTransform = null;
     }
 
     public interface IAudioManager
@@ -86,14 +89,17 @@ namespace of2.Audio
     
         public AudioClipHandle PlayAudio(HelperPlayConfig config)
         {
-            if (config.soundEnum == -1)
+            if (config.soundId == -1)
                 return null;
             
             var playConfig = new PlayConfig()
             {
-                SoundID = _audioManagerHelper.AudioEnumToStringId(config.soundEnum),
+                SoundID = _audioManagerHelper.AudioEnumToStringId(config.soundId),
                 Volume = config.volume,
-                Delay = config.delay
+                Delay = config.delay,
+                In3D = config.In3D,
+                Position = config.position,
+                TrackTransform = config.trackTransform
             };
 
             return PlayAudio(playConfig);
@@ -106,7 +112,7 @@ namespace of2.Audio
     
         public AudioClipHandle GetAudio(int soundIdEnum, Transform target)
         {
-            return PlayAudio(new PlayConfig { SoundID = _audioManagerHelper.AudioEnumToStringId(soundIdEnum), StartPaused = true, Target = target });
+            return PlayAudio(new PlayConfig { SoundID = _audioManagerHelper.AudioEnumToStringId(soundIdEnum), StartPaused = true, TrackTransform = target });
         }
 
         public AudioClipHandle PlayAudio(PlayConfig c)

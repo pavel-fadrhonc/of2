@@ -537,11 +537,9 @@ namespace of2.Audio
             }
 
             Vector3? pos = null;
-            if (c.Position)
-                pos = c.Position.position;
-
-            if (c.PositionV3.HasValue)
-                pos = c.PositionV3.Value;
+            
+            if (c.Position.HasValue)
+                pos = c.Position.Value;
                 
             AudioClipPlayer player = PrepareClip(clipToPlay,
                 cat,
@@ -556,9 +554,8 @@ namespace of2.Audio
                 c.MaxDistance.HasValue ? c.MaxDistance.Value : 500f,
                 c.VolumeRolloffMode.HasValue ? c.VolumeRolloffMode.Value : AudioRolloffMode.Logarithmic,
                 c.PitchRandomisation.HasValue ? c.PitchRandomisation.Value : cat.PitchRandomizationValue,
-                c.Target,
-                c.ReferenceAudioSource,
-                c.Parent);
+                c.TrackTransform,
+                c.ReferenceAudioSource);
             
             //D.AudioLogFormat("Playing sound {0} with delay {1}", c.SoundID, (c.Delay.HasValue ? c.Delay.Value : 0));
 
@@ -587,7 +584,8 @@ namespace of2.Audio
                 AddStereoControl(player.AudioSource, cat.StereoPan);
             }
 
-            if ((m_AudioMode == AudioMode.AUDIO_3D || m_AudioMode == AudioMode.OCULUS_READY) && !c.ReferenceAudioSource)
+            if ((m_AudioMode == AudioMode.AUDIO_3D || m_AudioMode == AudioMode.OCULUS_READY) && ((c.In3D.HasValue && c.In3D.Value ) || (!c.In3D.HasValue)) 
+                && !c.ReferenceAudioSource)
             {
                 Add3DData(player.AudioSource, m_Preferences.Default3DSettings);
             }
@@ -596,7 +594,7 @@ namespace of2.Audio
         }
 
 
-        AudioClipPlayer PrepareClip(AudioClip clip, AudioManagerCategory trigger, bool loop = false, bool startPaused = false, AudioMixerGroup outBus = null, float volume = 1.0f, float delay = 0.0f, bool in3D = false, Vector3? position = null, float minDistance = 1f, float maxDistance = 500f, AudioRolloffMode volumeRolloffMode = AudioRolloffMode.Logarithmic, float pitchRandomisation = 0.0f, Transform target = null, AudioSource referenceAudioSource = null, Transform parent = null)
+        AudioClipPlayer PrepareClip(AudioClip clip, AudioManagerCategory trigger, bool loop = false, bool startPaused = false, AudioMixerGroup outBus = null, float volume = 1.0f, float delay = 0.0f, bool in3D = false, Vector3? position = null, float minDistance = 1f, float maxDistance = 500f, AudioRolloffMode volumeRolloffMode = AudioRolloffMode.Logarithmic, float pitchRandomisation = 0.0f, Transform trackTrans = null, AudioSource referenceAudioSource = null)
         {
             AudioClipPlayer go = m_AudioClipPlayerPool.RentObject().GetComponent<AudioClipPlayer>();
             go.Setup(m_AudioClipPlayerPool, this, signalBus);
@@ -607,7 +605,7 @@ namespace of2.Audio
                 D.LogError("Rented AudioClipPlayer is not empty! Used for " + go.ClipID);
             }
 
-            go.transform.parent = parent != null ? parent : transform;
+            go.transform.parent = transform;
             go.transform.localPosition = Vector3.zero;
 
             var audioSource = go.AudioSource;
@@ -622,7 +620,7 @@ namespace of2.Audio
             audioSource.clip = clip;
             audioSource.volume = volume;
             audioSource.spatialBlend = referenceAudioSource ? referenceAudioSource.spatialBlend : (in3D) ? 1.0f : 0.0f;
-            if (in3D)
+            if (in3D || m_AudioMode == AudioMode.AUDIO_3D)
             {
                 audioSource.minDistance = referenceAudioSource ? referenceAudioSource.minDistance : minDistance;
                 audioSource.maxDistance = referenceAudioSource ? referenceAudioSource.maxDistance : maxDistance;
@@ -663,7 +661,7 @@ namespace of2.Audio
                 releaseDelayRealTime = clip.length + 0.1f;
             }
 
-            go.SetClip(clip, target, releaseDelayGameTime, releaseDelayRealTime, trigger.ID);
+            go.SetClip(clip, trackTrans, releaseDelayGameTime, releaseDelayRealTime, trigger.ID);
 
             return go;
         }

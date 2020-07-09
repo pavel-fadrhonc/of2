@@ -210,8 +210,7 @@ namespace of2.Audio
             
             string prefabGuid = AssetDatabase.FindAssets(AudioPreferences.AudioManagerInstallerPrefabName).FirstOrDefault();
             string prefabPath = AssetDatabase.GUIDToAssetPath(prefabGuid);
-            prefabPath = prefabPath.Replace("Assets/", "");
-            
+
             Debug.Log("Installer Prefab Path: " + filePath);
 
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
@@ -611,7 +610,7 @@ namespace of2.Audio
 
                     EditorGUILayout.BeginHorizontal();
                     {
-                        m_NodeToDraw.PitchRandomization = EditorGUILayout.ToggleLeft("Pitch Randomization", m_NodeToDraw.PitchRandomization, GUILayout.Width(200));
+                        m_NodeToDraw.PitchRandomization = EditorGUILayout.ToggleLeft(new GUIContent("Pitch Randomization", "This accounts for +- of this value randomly compared to original value of 1 pitch."), m_NodeToDraw.PitchRandomization, GUILayout.Width(200));
                         if (m_NodeToDraw.PitchRandomization)
                         {
                             m_NodeToDraw.PitchRandomizationValue = EditorGUILayout.Slider(m_NodeToDraw.PitchRandomizationValue, 0f, 1f);
