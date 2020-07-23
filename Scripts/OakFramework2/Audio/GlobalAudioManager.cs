@@ -1,4 +1,5 @@
 ﻿#pragma warning disable 649
+#pragma warning disable 067
 
 using System.Collections;
 using System;

@@ -37,7 +37,18 @@ public class DebugDraw
         Sphere(ray.origin, 0.03f, color, duration);
     }
 
+    public static void Cross(Vector3 center, float size, Color color, Vector3 normal, float duration = 0)
+    {
+        Cross(center, size, size, color, normal, duration);
+    }
 
+    public static void Cross(Vector3 center, float sizeX, float sizeY, Color color, Vector3 normal, float duration = 0)
+    {
+        var rightVector = Vector3.Cross(Vector3.up, normal).normalized;
+        var upVector = Vector3.Cross(rightVector, normal).normalized;
+        Debug.DrawLine(center - 0.5f * sizeX * rightVector, center + 0.5f * sizeX * rightVector, color);
+        Debug.DrawLine(center - 0.5f * sizeY * upVector, center + 0.5f * sizeY * upVector, color);
+    }
     
     public static void Capsule(Vector3 center, Vector3 dir, float radius, float height, Color color, float duration = 0)
     {
