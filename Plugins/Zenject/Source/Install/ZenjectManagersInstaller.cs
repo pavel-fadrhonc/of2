@@ -13,8 +13,10 @@ namespace Zenject
     {
         public override void InstallBindings()
         {
-            Container.Bind(typeof(TickableManager), typeof(InitializableManager), typeof(DisposableManager))
+            Container.Bind(typeof(TickableManager), typeof(InitializableManager), typeof(LateInitializableManager), typeof(DisposableManager))
                 .ToSelf().AsSingle().CopyIntoAllSubContainers();
+            
+            InvokerInstaller.Install(Container, Container.DefaultParent);
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace Zenject
 {
     [DebuggerStepThrough]
-    public class Kernel : IInitializable, IDisposable, ITickable, ILateTickable, IFixedTickable, ILateDisposable
+    public class Kernel : IInitializable, IDisposable, ITickable, ILateTickable, IFixedTickable, ILateDisposable, ILateInitializable
     {
         [InjectLocal]
         TickableManager _tickableManager = null;
@@ -14,6 +14,9 @@ namespace Zenject
 
         [InjectLocal]
         DisposableManager _disposablesManager = null;
+        
+        [InjectLocal]
+        LateInitializableManager _lateInitializableManager = null;
 
         public virtual void Initialize()
         {
@@ -43,6 +46,11 @@ namespace Zenject
         public virtual void FixedTick()
         {
             _tickableManager.FixedUpdate();
+        }
+
+        public void LateInitialize()
+        {
+            _lateInitializableManager.LateInitalize();
         }
     }
 }

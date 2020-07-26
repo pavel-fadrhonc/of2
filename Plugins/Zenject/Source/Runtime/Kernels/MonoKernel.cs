@@ -12,6 +12,9 @@ namespace Zenject
 
         [InjectLocal]
         InitializableManager _initializableManager = null;
+        
+        [InjectLocal]
+        LateInitializableManager _lateInitializableManager = null;        
 
         [InjectLocal]
         DisposableManager _disposablesManager = null;
@@ -36,6 +39,7 @@ namespace Zenject
             {
                 _hasInitialized = true;
                 _initializableManager.Initialize();
+                _lateInitializableManager.Initialize();
             }
         }
 
