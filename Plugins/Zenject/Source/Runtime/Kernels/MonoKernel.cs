@@ -39,7 +39,7 @@ namespace Zenject
             {
                 _hasInitialized = true;
                 _initializableManager.Initialize();
-                _lateInitializableManager.Initialize();
+                _lateInitializableManager.DelayInitialize();
             }
         }
 

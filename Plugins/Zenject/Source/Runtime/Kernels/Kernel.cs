@@ -48,7 +48,7 @@ namespace Zenject
             _tickableManager.FixedUpdate();
         }
 
-        public void LateInitialize()
+        public virtual void LateInitialize()
         {
             _lateInitializableManager.LateInitalize();
         }

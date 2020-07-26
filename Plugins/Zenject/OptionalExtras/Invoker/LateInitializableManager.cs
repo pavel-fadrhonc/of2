@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using ModestTree;
 using Zenject;
 
 namespace Zenject
@@ -10,12 +11,15 @@ namespace Zenject
     }
     
     // TODO: make it so this supports priority bound in BindExecutionOrder
-    public class LateInitializableManager : IInitializable
+    public class LateInitializableManager
     {
+        bool _hasInitialized;        
+        
         private readonly List<ILateInitializable> lateInitializables;
         private readonly CoroutineRunner coroutineRunner;
 
         public LateInitializableManager(
+            [Inject(Optional = true, Source = InjectSources.Local)]
             List<ILateInitializable> lateInitializables,
             CoroutineRunner coroutineRunner)
         {
@@ -23,13 +27,16 @@ namespace Zenject
             this.coroutineRunner = coroutineRunner;
         }
         
-        public void Initialize()
+        public void DelayInitialize()
         {
             coroutineRunner.RunCoroutine(LateInitialize());           
         }
 
         public void LateInitalize()
         {
+            Assert.That(!_hasInitialized);
+            _hasInitialized = true;
+
             foreach (var lateInitializable in lateInitializables)
             {
                 lateInitializable.LateInitialize();
