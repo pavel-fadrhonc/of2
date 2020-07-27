@@ -3497,6 +3497,11 @@ namespace Zenject
             {
                 BindInitializableExecutionOrder(type, order);
             }
+            
+            if (type.DerivesFrom<ILateInitializable>())
+            {
+                BindLateInitializableExecutionOrder(type, order);
+            }            
 
             if (type.DerivesFrom<IDisposable>())
             {
@@ -3552,6 +3557,15 @@ namespace Zenject
 
             return BindInstance(
                 ValuePair.New(type, order)).WhenInjectedInto<InitializableManager>();
+        }
+        
+        public CopyNonLazyBinder BindLateInitializableExecutionOrder(Type type, int order)
+        {
+            Assert.That(type.DerivesFrom<ILateInitializable>(),
+                "Expected type '{0}' to derive from IInitializable", type);
+
+            return BindInstance(
+                ValuePair.New(type, order)).WhenInjectedInto<LateInitializableManager>();
         }
 
         public CopyNonLazyBinder BindDisposableExecutionOrder<T>(int order)
