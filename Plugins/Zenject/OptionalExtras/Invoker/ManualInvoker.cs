@@ -71,9 +71,7 @@ namespace Zenject
         private InvokeTasksCache _tasksCache = new InvokeTasksCache();
         private List<InvokeTask> _removedTasks = new List<InvokeTask>();
 
-    #region UNITY METHODS
-
-        void Update(float dt)
+        public void Update(float dt)
         {
             _removedTasks.Clear();
 
@@ -93,8 +91,6 @@ namespace Zenject
                 StopTask(removedTask);
             }
         }
-
-    #endregion
 
         #region PUBLIC METHODS
 
@@ -138,6 +134,10 @@ namespace Zenject
             return _tasksCache.GetCleanTask();
         }
         
+        /// <summary>
+        /// You can borrow task here and the use this class UpdateTask function to update it with dt.
+        /// This class won't be part of tasks that belong to this class so you can still update the whole class using Update
+        /// </summary>
         public InvokeTask BorrowTask(Action task_, float delay_, float interval_, float cancelTime = 0)
         {
             var invokeTask = _tasksCache.GetCleanTask();

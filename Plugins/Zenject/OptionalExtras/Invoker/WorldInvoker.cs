@@ -21,14 +21,16 @@ namespace Zenject
     /// <summary>
     /// Same as ManualInvoker except update method is called automatically from Unity Update method
     /// </summary>
-    public class WorldInvoker : IInvoker, IInitializable
+    public class WorldInvoker : IInvoker, IInitializable, IPausable
     {
         private List<ManualInvoker.InvokeTask> ignorePauseTasks = new List<ManualInvoker.InvokeTask>();
         private List<int> removedTasks = new List<int>();
         
         private readonly MonoUpdater monoUpdater;
         private readonly ManualInvoker manualInvoker;
-        
+
+        public bool Paused { get; set; } = false;
+
         public WorldInvoker(
             ManualInvoker manualInvoker,
             MonoUpdater monoUpdater)
@@ -63,6 +65,9 @@ namespace Zenject
 
                 removedTasks.Clear();
             }
+            
+            if (!Paused)
+                manualInvoker.Update(dt);
         }
 
         public void InvokeRepeating(Action task_, float delay_, float interval_, float cancelTime = 0, bool ignorePause = false)
