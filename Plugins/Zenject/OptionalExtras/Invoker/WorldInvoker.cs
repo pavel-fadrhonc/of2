@@ -23,7 +23,7 @@ namespace Zenject
     /// </summary>
     public class WorldInvoker : IInvoker, IInitializable, IPausable
     {
-        private List<ManualInvoker.InvokeTask> ignorePauseTasks = new List<ManualInvoker.InvokeTask>();
+        private List<ManualInvoker.InvokerTaskInfo> ignorePauseTasks = new List<ManualInvoker.InvokerTaskInfo>();
         private List<int> removedTasks = new List<int>();
         
         private readonly MonoUpdater monoUpdater;
@@ -70,7 +70,7 @@ namespace Zenject
                 manualInvoker.Update(dt);
         }
 
-        public void InvokeRepeating(Action task_, float delay_, float interval_, float cancelTime = 0, bool ignorePause = false)
+        public void InvokeRepeating(InvokerTask task_, float delay_, float interval_, float cancelTime = 0, bool ignorePause = false)
         {
             if (ignorePause)
             {
@@ -83,7 +83,7 @@ namespace Zenject
             }
         }
 
-        public void Invoke(Action task_, float delay_, bool ignorePause)
+        public void Invoke(InvokerTask task_, float delay_, bool ignorePause)
         {
             if (ignorePause)
             {
@@ -96,7 +96,7 @@ namespace Zenject
             }
         }
 
-        public void StopInvoke(Action task, float delay)
+        public void StopInvoke(InvokerTask task, float delay)
         {
             manualInvoker.StopInvoke(task, 0);
             for (var index = 0; index < ignorePauseTasks.Count; index++)

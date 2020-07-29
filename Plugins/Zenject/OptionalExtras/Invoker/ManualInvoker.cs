@@ -12,18 +12,19 @@ namespace Zenject
 {
     public class ManualInvoker
     {
-        public class InvokeTask
+        public class InvokerTaskInfo
         {
-            public Action Task;
+            public InvokerTask Task;
             public float Delay;
             public float Interval;
-            public float TimeSinceLastInvoke;
+            public float LastInvokeTime; // this is time incremented by dt when the task was actually ran
+            public float NextInvokeTime; // this is multiples of Interval
             public float TotalRunTime;
             public bool started;
             public float cancelTime;
             public bool active;
 
-            public InvokeTask()
+            public InvokerTaskInfo()
             {
                 Reset();
             }
@@ -33,7 +34,8 @@ namespace Zenject
                 Task = null;
                 Delay = 0;
                 Interval = 0;
-                TimeSinceLastInvoke = 0;
+                LastInvokeTime = 0;
+                NextInvokeTime = 0;
                 started = false;
                 cancelTime = 0;
                 TotalRunTime = 0;
@@ -43,33 +45,33 @@ namespace Zenject
 
         private class InvokeTasksCache
         {
-            private List<InvokeTask> _invokeTasks = new List<InvokeTask>();
+            private List<InvokerTaskInfo> _invokeTasks = new List<InvokerTaskInfo>();
 
-            public InvokeTask GetCleanTask()
+            public InvokerTaskInfo GetCleanTask()
             {
-                InvokeTask task;
-                if ((task = _invokeTasks.FirstOrDefault(t => t.active == false)) == null)
+                InvokerTaskInfo taskInfo;
+                if ((taskInfo = _invokeTasks.FirstOrDefault(t => t.active == false)) == null)
                 {
-                    task = new InvokeTask();
-                    _invokeTasks.Add(task);
+                    taskInfo = new InvokerTaskInfo();
+                    _invokeTasks.Add(taskInfo);
                 }
                 else
                 {
-                    task.Reset();
+                    taskInfo.Reset();
                 }
 
-                return task;
+                return taskInfo;
             }
 
-            public void StopTask(InvokeTask task)
+            public void StopTask(InvokerTaskInfo taskInfo)
             {
-                task.active = false;
+                taskInfo.active = false;
             }
         }
 
-        private List<InvokeTask> _tasks = new List<InvokeTask>();
+        private List<InvokerTaskInfo> _tasks = new List<InvokerTaskInfo>();
         private InvokeTasksCache _tasksCache = new InvokeTasksCache();
-        private List<InvokeTask> _removedTasks = new List<InvokeTask>();
+        private List<InvokerTaskInfo> _removedTasks = new List<InvokerTaskInfo>();
 
         public void Update(float dt)
         {
@@ -94,42 +96,41 @@ namespace Zenject
 
         #region PUBLIC METHODS
 
-        public bool UpdateTask(InvokeTask invokeTask, float dt)
+        public bool UpdateTask(InvokerTaskInfo invokerTaskInfo, float dt)
         {
             bool removed = false;
             
-            invokeTask.TotalRunTime += dt;
+            invokerTaskInfo.TotalRunTime += dt;
             
-            if (!invokeTask.started)
+            if (!invokerTaskInfo.started)
             {
-                if (Mathf.Approximately(invokeTask.TotalRunTime, invokeTask.Delay) ||
-                    invokeTask.TotalRunTime > invokeTask.Delay)
+                if (invokerTaskInfo.TotalRunTime >= invokerTaskInfo.Delay)
                 {
-                    invokeTask.started = true;
-                    invokeTask.TimeSinceLastInvoke += dt;
-                    invokeTask.Task();
+                    invokerTaskInfo.started = true;
+                    invokerTaskInfo.Task(invokerTaskInfo.TotalRunTime - invokerTaskInfo.Delay);
+                    invokerTaskInfo.TotalRunTime -= invokerTaskInfo.Delay;
+                    invokerTaskInfo.LastInvokeTime = invokerTaskInfo.TotalRunTime;
+                    invokerTaskInfo.NextInvokeTime = invokerTaskInfo.Interval;
                 }
             }
             else
             {
-                invokeTask.TimeSinceLastInvoke += dt;
-                if (Mathf.Approximately(invokeTask.TimeSinceLastInvoke, invokeTask.Interval) ||
-                    invokeTask.TimeSinceLastInvoke > invokeTask.Interval)
+                if (invokerTaskInfo.TotalRunTime > invokerTaskInfo.NextInvokeTime)
                 {
-                    invokeTask.Task();
-                    invokeTask.TimeSinceLastInvoke = invokeTask.TimeSinceLastInvoke - invokeTask.Interval;
+                    invokerTaskInfo.Task(invokerTaskInfo.TotalRunTime - invokerTaskInfo.LastInvokeTime);
+                    invokerTaskInfo.LastInvokeTime = invokerTaskInfo.TotalRunTime;
+                    invokerTaskInfo.NextInvokeTime += invokerTaskInfo.Interval;
                 }
             }
 
-            if ((Mathf.Approximately(invokeTask.TotalRunTime, invokeTask.cancelTime) ||
-                 invokeTask.TotalRunTime > invokeTask.cancelTime) &&
-                (invokeTask.cancelTime > 0 && invokeTask.Interval != 0 || invokeTask.Interval == 0))
+            if ((invokerTaskInfo.TotalRunTime >= invokerTaskInfo.cancelTime) &&
+                (invokerTaskInfo.cancelTime > 0 && invokerTaskInfo.Interval != 0 || invokerTaskInfo.Interval == 0))
                 removed = true;
 
             return removed;
         }
 
-        public InvokeTask BorrowTask()
+        public InvokerTaskInfo BorrowTask()
         {
             return _tasksCache.GetCleanTask();
         }
@@ -138,7 +139,7 @@ namespace Zenject
         /// You can borrow task here and the use this class UpdateTask function to update it with dt.
         /// This class won't be part of tasks that belong to this class so you can still update the whole class using Update
         /// </summary>
-        public InvokeTask BorrowTask(Action task_, float delay_, float interval_, float cancelTime = 0)
+        public InvokerTaskInfo BorrowTask(InvokerTask task_, float delay_, float interval_, float cancelTime = 0)
         {
             var invokeTask = _tasksCache.GetCleanTask();
             invokeTask.Delay = delay_;
@@ -150,12 +151,12 @@ namespace Zenject
             return invokeTask;
         }        
 
-        public void ReturnTask(InvokeTask task)
+        public void ReturnTask(InvokerTaskInfo taskInfo)
         {
-            StopTask(task);
+            StopTask(taskInfo);
         }
 
-        public void InvokeRepeating(Action task_, float delay_, float interval_, float cancelTime = 0)
+        public void InvokeRepeating(InvokerTask task_, float delay_, float interval_, float cancelTime = 0)
         {
             _tasks.Add(BorrowTask(task_, delay_, interval_, cancelTime));
         }
@@ -163,7 +164,7 @@ namespace Zenject
         /// <summary>
         /// Invokes just once
         /// </summary>
-        public void Invoke(Action task_, float delay_)
+        public void Invoke(InvokerTask task_, float delay_)
         {
             // using cancelTime = delay can work because record are remove at the end of Update loop
             InvokeRepeating(task_, delay_, 0, delay_);
@@ -172,7 +173,7 @@ namespace Zenject
         /// <summary>
         /// Wont break if task is not actually Invoking
         /// </summary>
-        public void StopInvoke(Action task, float delay)
+        public void StopInvoke(InvokerTask task, float delay)
         {
             var invTask = _tasks.Find(t => t.Task == task);
             if (invTask == null) return;
@@ -186,10 +187,10 @@ namespace Zenject
 
         #region PRIVATE / PROTECTED METHODS
 
-        private void StopTask(InvokeTask task)
+        private void StopTask(InvokerTaskInfo taskInfo)
         {
-            _tasks.Remove(task);
-            _tasksCache.StopTask(task);        
+            _tasks.Remove(taskInfo);
+            _tasksCache.StopTask(taskInfo);        
         }
 
         #endregion
