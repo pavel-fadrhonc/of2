@@ -1,10 +1,11 @@
 {
-    "name": "OakFramework2.Editor",
+    "name": "of2.Audio.Editor",
     "references": [
-        "GUID:478a2357cc57436488a56e564b08d223",
-        "GUID:601ff19678d7b644087ec82a4923cc17",
-        "GUID:33305aae766b49443a1c80d6f76778da",
-        "GUID:f1687668558c67d4fb125036d898193f"
+        "GUID:d4e3e3b3d0ee4784e90637e8ec22ae40",
+        "GUID:dda45e0c61c15ff488af42529ccf35a3",
+        "GUID:9b2c24e170966eb46b1b024237dd0e51",
+        "GUID:8f7b33338fec16140b1c041c951a378a",
+        "GUID:0d8beb7f090555447a6cf5ce9e54dbb4"
     ],
     "includePlatforms": [
         "Editor"

@@ -1,0 +1,15 @@
+{
+    "name": "of2.Curves.Core",
+    "references": [
+        "GUID:968e8988234ac304bb9cea778b0d5263"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

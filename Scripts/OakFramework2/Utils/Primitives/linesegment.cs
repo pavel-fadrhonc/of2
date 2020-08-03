@@ -2,9 +2,11 @@
 using UnityEngine;
 
 using static Unity.Mathematics.math;
+using Unity.Mathematics;
+
 namespace Primitives
 {
-	using Unity.Mathematics;
+	
 
 	public struct lineseg
 	{

@@ -1,0 +1,21 @@
+{
+    "name": "of2.Audio",
+    "references": [
+        "GUID:0d8beb7f090555447a6cf5ce9e54dbb4",
+        "GUID:8303ccb9c12ca1f40abc416e90fc37c2",
+        "GUID:9b2c24e170966eb46b1b024237dd0e51",
+        "GUID:8f7b33338fec16140b1c041c951a378a",
+        "GUID:dda45e0c61c15ff488af42529ccf35a3",
+        "GUID:5a47ddb90df5df94884a08e2d9a36e78",
+        "GUID:47eb96f0582a3ec45971c569acb5f6a8"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -2,7 +2,7 @@
 using UnityEditor;
 using System.Collections.Generic; 
 
-namespace Code.Utils.Editor
+namespace of2.Utils.TagSelector.Editor
 {
  [CustomPropertyDrawer(typeof(TagSelectorAttribute))]
  

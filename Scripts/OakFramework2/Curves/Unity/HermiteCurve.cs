@@ -1,10 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using of2.Curves;
-using UnityEditor.SceneManagement;
-using UnityEditorInternal.VR.iOS;
 using UnityEngine;
 using UnityEngine.Serialization;
 
