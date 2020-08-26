@@ -794,7 +794,7 @@ namespace OakFramework2.Curves.Unity.Editor
                     ShowClosestPointOnOpenCurve(points);
             }
             
-            if (m_removeIndex >= 0 && points.arraySize > 4)
+            if (m_removeIndex >= 0 && points.arraySize > 3)
             {
                 if (curve.closed && m_removeIndex == 0)
                 {
