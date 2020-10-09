@@ -8,7 +8,33 @@ using Object = UnityEngine.Object;
 
 namespace Zenject
 {
-    public class PrefabFactoryNameBased<TContract> : IFactory<Object, TContract>
+    public class PrefabFactorySpawnParams
+    {
+        public Vector3? position;
+        public Quaternion? rotation;
+        public Vector3? scale;
+        public Transform parent;
+    }
+
+    public class PrefabFactoryNameBasedHelper
+    {
+        public static void SetupGameObject(GameObject go, PrefabFactorySpawnParams spawnParams)
+        {
+            if (spawnParams.position != null)
+                go.transform.position = spawnParams.position.Value;
+
+            if (spawnParams.rotation != null)
+                go.transform.rotation = spawnParams.rotation.Value;
+
+            if (spawnParams.scale != null)
+                go.transform.localScale = spawnParams.scale.Value;
+            
+            if (spawnParams.parent != null)
+                go.transform.SetParent(spawnParams.parent);
+        }
+    }
+    
+    public class PrefabFactoryNameBased<TContract> : IFactory<Object, PrefabFactorySpawnParams, TContract>
         where TContract : Component, IPoolable<IMemoryPool> 
     {
         [Inject]
@@ -16,7 +42,7 @@ namespace Zenject
 
         private Dictionary<string, Pool> _prefabPool =new Dictionary<string, Pool>();
         
-        public TContract Create(Object prefab)
+        public TContract Create(Object prefab, PrefabFactorySpawnParams spawnParams = null)
         {
             Assert.That(prefab != null,
                 "Null prefab given to factory create method when instantiating object with type '{0}'.", typeof(TContract));
@@ -29,8 +55,11 @@ namespace Zenject
             }
             
             pool = _prefabPool[prefab.name];
-            
+
             instance = pool.Spawn();
+            
+            if (spawnParams != null)
+                PrefabFactoryNameBasedHelper.SetupGameObject(instance.gameObject, spawnParams);
 
             instance.OnSpawned(pool);
 
@@ -67,7 +96,7 @@ namespace Zenject
         }
     }
 
-    public class PrefabFactoryNameBased<TParam, TContract> : IFactory<Object, TParam, TContract>
+    public class PrefabFactoryNameBased<TParam, TContract> : IFactory<Object, TParam, PrefabFactorySpawnParams, TContract>
         where TContract : Component, IPoolable<TParam, IMemoryPool> 
     {
         [Inject]
@@ -75,7 +104,7 @@ namespace Zenject
 
         private Dictionary<string, Pool> _prefabPool = new Dictionary<string, Pool>();
         
-        public TContract Create(Object prefab, TParam param1)
+        public TContract Create(Object prefab, TParam param1, PrefabFactorySpawnParams spawnParams = null)
         {
             Assert.That(prefab != null,
                 "Null prefab given to factory create method when instantiating object with type '{0}'.", typeof(TContract));
@@ -90,6 +119,9 @@ namespace Zenject
             pool = _prefabPool[prefab.name];
             
             instance = pool.Spawn(param1);
+            
+            if (spawnParams != null)
+                PrefabFactoryNameBasedHelper.SetupGameObject(instance.gameObject, spawnParams);
 
             instance.OnSpawned(param1, pool);
 
@@ -126,7 +158,7 @@ namespace Zenject
         }
     }        
 
-    public class PrefabFactoryNameBased<TParam1, TParam2, TContract> : IFactory<Object, TParam1, TParam2, TContract>
+    public class PrefabFactoryNameBased<TParam1, TParam2, TContract> : IFactory<Object, TParam1, TParam2, PrefabFactorySpawnParams, TContract>
         where TContract : Component, IPoolable<TParam1, TParam2, IMemoryPool> 
     {
         [Inject]
@@ -134,7 +166,7 @@ namespace Zenject
 
         private Dictionary<string, Pool> _prefabPool =new Dictionary<string, Pool>();
         
-        public TContract Create(Object prefab, TParam1 param1, TParam2 param2)
+        public TContract Create(Object prefab, TParam1 param1, TParam2 param2, PrefabFactorySpawnParams spawnParams = null)
         {
             Assert.That(prefab != null,
                 "Null prefab given to factory create method when instantiating object with type '{0}'.", typeof(TContract));
@@ -149,6 +181,9 @@ namespace Zenject
             pool = _prefabPool[prefab.name];
             
             instance = pool.Spawn(param1, param2);
+            
+            if (spawnParams != null)
+                PrefabFactoryNameBasedHelper.SetupGameObject(instance.gameObject, spawnParams);
 
             instance.OnSpawned(param1, param2, pool);
 
@@ -185,7 +220,7 @@ namespace Zenject
         }
     }        
 
-    public class PrefabFactoryNameBased<TParam1, TParam2, TParam3, TContract> : IFactory<Object, TParam1, TParam2, TParam3, TContract>
+    public class PrefabFactoryNameBased<TParam1, TParam2, TParam3, TContract> : IFactory<Object, TParam1, TParam2, TParam3, PrefabFactorySpawnParams, TContract>
         where TContract : Component, IPoolable<TParam1, TParam2, TParam3, IMemoryPool> 
     {
         [Inject]
@@ -193,7 +228,7 @@ namespace Zenject
 
         private Dictionary<string, Pool> _prefabPool =new Dictionary<string, Pool>();
         
-        public TContract Create(Object prefab, TParam1 param1, TParam2 param2, TParam3 param3)
+        public TContract Create(Object prefab, TParam1 param1, TParam2 param2, TParam3 param3, PrefabFactorySpawnParams spawnParams = null)
         {
             Assert.That(prefab != null,
                 "Null prefab given to factory create method when instantiating object with type '{0}'.", typeof(TContract));
@@ -208,6 +243,9 @@ namespace Zenject
             pool = _prefabPool[prefab.name];
             
             instance = pool.Spawn(param1, param2, param3);
+            
+            if (spawnParams != null)
+                PrefabFactoryNameBasedHelper.SetupGameObject(instance.gameObject, spawnParams);
 
             instance.OnSpawned(param1, param2, param3, pool);
 
@@ -244,7 +282,7 @@ namespace Zenject
         }
     }      
     
-    public class PrefabFactoryNameBased<TParam1, TParam2, TParam3, TParam4, TContract> : IFactory<Object, TParam1, TParam2, TParam3, TParam4, TContract>
+    public class PrefabFactoryNameBased<TParam1, TParam2, TParam3, TParam4, TContract> : IFactory<Object, TParam1, TParam2, TParam3, TParam4, PrefabFactorySpawnParams, TContract>
         where TContract : Component, IPoolable<TParam1, TParam2, TParam3, TParam4, IMemoryPool> 
     {
         [Inject]
@@ -252,7 +290,7 @@ namespace Zenject
 
         private Dictionary<string, Pool> _prefabPool =new Dictionary<string, Pool>();
         
-        public TContract Create(Object prefab, TParam1 param1, TParam2 param2, TParam3 param3, TParam4 param4)
+        public TContract Create(Object prefab, TParam1 param1, TParam2 param2, TParam3 param3, TParam4 param4, PrefabFactorySpawnParams spawnParams = null)
         {
             Assert.That(prefab != null,
                 "Null prefab given to factory create method when instantiating object with type '{0}'.", typeof(TContract));
@@ -267,6 +305,9 @@ namespace Zenject
             pool = _prefabPool[prefab.name];
             
             instance = pool.Spawn(param1, param2, param3, param4);
+            
+            if (spawnParams != null)
+                PrefabFactoryNameBasedHelper.SetupGameObject(instance.gameObject, spawnParams);
 
             instance.OnSpawned(param1, param2, param3, param4, pool);
 
