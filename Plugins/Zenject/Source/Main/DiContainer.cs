@@ -3016,6 +3016,20 @@ namespace Zenject
                 TParam1, TContract, TFactory, TFactory>();
         }
         
+        public void BindNameBasedPoolablePrefabFactoryNonComp<TContract, TPlaceHolderFactory>()
+            where TContract : class, IPoolable<IMemoryPool> 
+            where TPlaceHolderFactory : PlaceholderFactory<UnityEngine.Object, PrefabFactorySpawnParams, TContract>
+        {
+            BindFactory<UnityEngine.Object, PrefabFactorySpawnParams, TContract, TPlaceHolderFactory>()
+                .FromFactory<PrefabFactoryNameBasedNonComp<TContract>>();
+                
+            BindFactory<UnityEngine.Object,
+                    PrefabFactoryNameBasedNonComp<TContract>.Pool,
+                    PrefabFactoryNameBasedNonComp<TContract>.PoolFactory>()
+                .FromSubContainerResolve()
+                .ByInstaller<PrefabFactoryNameBasedNonComp<TContract>.PoolInstaller>();             
+        }
+        
         public void BindNameBasedPoolablePrefabFactory<TContract, TPlaceHolderFactory>()
             where TContract : Component, IPoolable<IMemoryPool> 
             where TPlaceHolderFactory : PlaceholderFactory<UnityEngine.Object, PrefabFactorySpawnParams, TContract>

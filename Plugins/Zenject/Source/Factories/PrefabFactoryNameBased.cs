@@ -34,6 +34,77 @@ namespace Zenject
         }
     }
     
+    public class PrefabFactoryNameBasedNonComp<TContract> : IFactory<Object, PrefabFactorySpawnParams, TContract>
+        where TContract : class, IPoolable<IMemoryPool>  
+    {
+        [Inject]
+        PoolFactory _factory;
+
+        private Dictionary<string, Pool> _prefabPool =new Dictionary<string, Pool>();
+        
+        public TContract Create(Object prefab, PrefabFactorySpawnParams spawnParams = null)
+        {
+            Assert.That(prefab != null,
+                "Null prefab given to factory create method when instantiating object with type '{0}'.", typeof(TContract));
+
+            TContract instance = null;
+            Pool pool = null;
+            if (!_prefabPool.ContainsKey(prefab.name))
+            {
+                _prefabPool[prefab.name] = _factory.Create(prefab);
+            }
+            
+            pool = _prefabPool[prefab.name];
+
+            instance = pool.Spawn();
+            
+            // if (spawnParams != null)
+            //     PrefabFactoryNameBasedHelper.SetupGameObject(instance.gameObject, spawnParams);
+
+            instance.OnSpawned(pool);
+
+            return instance;
+        }
+
+        public class Pool : MemoryPool<TContract>
+        {
+            protected override void OnDespawned(TContract item)
+            {
+                base.OnDespawned(item);
+                
+                item.OnDespawned();
+            }
+        }
+        
+        public class PoolFactory : PlaceholderFactory<UnityEngine.Object, Pool> {}
+
+        public class PoolInstaller : Installer<PoolInstaller>
+        {
+            [Inject] private UnityEngine.Object prefab;
+
+            public override void InstallBindings()
+            {
+                if (prefab == null)
+                { // just to shut the validator
+                    if (typeof(TContract).DerivesFrom(typeof(Component)))
+                    {
+                        Container.BindMemoryPool<TContract, Pool>().FromSubContainerResolve().ByMethod(container => container.Bind<TContract>().FromNewComponentOnRoot().AsSingle());
+                    }
+                    else
+                    {
+                        Container.BindMemoryPool<TContract, Pool>().FromSubContainerResolve().ByMethod(container => container.Bind<TContract>().AsSingle());    
+                    }
+                    
+                    Debug.LogWarning("No prefab injected in PoolInstaller.");
+                    return;
+                }
+                
+                //Container.BindMemoryPool<TContract, Pool>().FromComponentInNewPrefab(prefab);
+                Container.BindMemoryPool<TContract, Pool>().FromSubContainerResolve().ByNewContextPrefab(prefab);
+            }
+        }
+    }    
+    
     public class PrefabFactoryNameBased<TContract> : IFactory<Object, PrefabFactorySpawnParams, TContract>
         where TContract : Component, IPoolable<IMemoryPool> 
     {
