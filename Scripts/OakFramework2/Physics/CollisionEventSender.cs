@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using of2.Base;
 using UnityEngine;
 
 namespace o2f.Physics
@@ -9,7 +10,7 @@ namespace o2f.Physics
     public delegate void TriggerEventHandler(Collider collider, GameObject sender);
     public delegate void TriggerEvent2DHandler(Collider2D collider, GameObject sender);
 
-    public class CollisionEventSender : MonoBehaviour
+    public class CollisionEventSender : MonoBehaviour, IEnablable
     {
         public bool DisabledCollidersWithThis { get; set; } = true;
         
@@ -31,14 +32,32 @@ namespace o2f.Physics
 
         private List<Collider> _colliders;
         private List<Collider2D> _colliders2D;
-        
+
+        /// <summary>
+        /// Since OnDisabled does not always get called when setting MonoBehaviour.enabled = false, this is the only sure way to get the disabling / enabling functionality
+        /// </summary>
+        public bool Enabled
+        {
+            get => enabled;
+            set
+            {
+                if (value == enabled) return;
+                
+                enabled = value;
+                if (value)
+                    EnableCallback();
+                else
+                    DisableCallback();
+            }
+        }
+
         private void Awake()
         {
             _colliders = new List<Collider>(GetComponents<Collider>());
             _colliders2D = new List<Collider2D>(GetComponents<Collider2D>());
         }
 
-        private void OnEnable()
+        private void EnableCallback()
         {
             if (DisabledCollidersWithThis)
             {
@@ -47,7 +66,7 @@ namespace o2f.Physics
             }
         }
 
-        private void OnDisable()
+        private void DisableCallback()
         {
             if (DisabledCollidersWithThis)
             {
@@ -91,7 +110,7 @@ namespace o2f.Physics
             if (TriggerExitEvent != null)
                 TriggerExitEvent(collider, gameObject);
         }
-        
+
         protected virtual void OnCollisionEnter2D(Collision2D collision)
         {
             if (CollisionEnter2DEvent != null)
@@ -126,6 +145,6 @@ namespace o2f.Physics
         {
             if (TriggerExit2DEvent != null)
                 TriggerExit2DEvent(collider, gameObject);
-        }        
+        }
     }
 }
