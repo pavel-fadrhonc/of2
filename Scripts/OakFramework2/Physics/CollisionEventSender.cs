@@ -51,16 +51,26 @@ namespace o2f.Physics
             }
         }
 
+        private void InitColliders()
+        {
+            if (_colliders == null)
+            {
+                _colliders = new List<Collider>(GetComponents<Collider>());
+                _colliders2D = new List<Collider2D>(GetComponents<Collider2D>());
+            }
+        }
+        
         private void Awake()
         {
-            _colliders = new List<Collider>(GetComponents<Collider>());
-            _colliders2D = new List<Collider2D>(GetComponents<Collider2D>());
+            InitColliders();
         }
 
         private void EnableCallback()
         {
             if (DisabledCollidersWithThis)
             {
+                InitColliders();
+                
                 _colliders.ForEach(c => c.enabled = true);
                 _colliders2D.ForEach(c => c.enabled = true);
             }
@@ -70,6 +80,8 @@ namespace o2f.Physics
         {
             if (DisabledCollidersWithThis)
             {
+                InitColliders();
+                
                 _colliders.ForEach(c => c.enabled = false);
                 _colliders2D.ForEach(c => c.enabled = false);
             }
