@@ -31,13 +31,13 @@ namespace Zenject
         {
             foreach (var task_ in _tasks)
             {
-                if (task_.Task.GetType() == task.GetType())
+                if (task_.Task.Equals(task))
                     return true;
             }            
             
             foreach (var queuedTask in _queuedTasks)
             {
-                if (queuedTask.Task.GetType() == task.GetType())
+                if (queuedTask.Task.Equals(task))
                     return true;
             }
 
