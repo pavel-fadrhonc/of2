@@ -149,6 +149,16 @@ namespace Zenject
             return _updater.HasTask(tickable);
         }
 
+        public bool HasFixed(IFixedTickable fixedTickable)
+        {
+            return _fixedUpdater.HasTask(fixedTickable);
+        }
+        
+        public bool HasLate(ILateTickable lateTickable)
+        {
+            return _lateUpdater.HasTask(lateTickable);
+        }        
+
         public void Add(ITickable tickable, int priority)
         {
             _updater.AddTask(tickable, priority);
