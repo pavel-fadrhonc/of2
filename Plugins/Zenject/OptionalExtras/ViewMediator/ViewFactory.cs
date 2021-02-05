@@ -1,0 +1,65 @@
+﻿using System.ComponentModel;
+using UnityEngine;
+using Zenject;
+
+namespace Plugins.Zenject.OptionalExtras.ViewMediator
+{
+    public class ViewFactory<TParam, TView> : IFactory<TParam, PrefabFactorySpawnParams, TView>
+        where TView : View<TParam>
+    {
+        [Inject] 
+        private GameObject _prefab;
+        
+        [Inject]
+        PoolFactory _factory;
+        
+        private Pool _pool;
+
+        public TView Create(TParam param, PrefabFactorySpawnParams spawnParams = null)
+        {
+
+            if (_pool == null)
+            {
+                _pool = _factory.Create(_prefab);
+            }
+            
+            var instance = _pool.Spawn();
+            
+            if (spawnParams != null)
+                PrefabFactoryNameBasedHelper.SetupGameObject(instance.gameObject, spawnParams);
+
+            instance.OnSpawned(param, _pool);
+
+            return instance;
+        }
+
+        public class Pool : MonoMemoryPool<TView>
+        {
+            protected override void OnDespawned(TView item)
+            {
+                base.OnDespawned(item);
+                
+                item.OnDespawned();
+            }
+        }
+
+        public class PoolFactory : PlaceholderFactory<UnityEngine.Object, Pool> {}
+
+        public class PoolInstaller : Installer<PoolInstaller>
+        {
+            [Inject] private UnityEngine.Object prefab;
+
+            public override void InstallBindings()
+            {
+                if (prefab == null)
+                { // just to shut the validator
+                    Container.BindMemoryPool<TView, Pool>().FromNewComponentOnNewGameObject();
+                    Debug.LogWarning("No prefab injected in PoolInstaller.");
+                    return;
+                }
+                
+                Container.BindMemoryPool<TView, Pool>().FromComponentInNewPrefab(prefab);
+            }
+        }
+    }
+}

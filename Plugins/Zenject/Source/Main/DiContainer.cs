@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ModestTree;
 using ModestTree.Util;
+using Plugins.Zenject.OptionalExtras.ViewMediator;
 using Zenject.Internal;
 #if !NOT_UNITY3D
 using UnityEngine;
@@ -3098,6 +3099,22 @@ namespace Zenject
                     PrefabFactoryNameBased<TParam1, TParam2, TParam3, TParam4, TContract>.PoolFactory>()
                 .FromSubContainerResolve()
                 .ByInstaller<PrefabFactoryNameBased<TParam1, TParam2, TParam3, TParam4, TContract>.PoolInstaller>();             
+        }
+
+        public void BindViewFactory<TParam1, TView, TPlaceHolderFactory>(GameObject viewPrefab)
+            where TView : View<TParam1>
+            where TPlaceHolderFactory : PlaceholderFactory<TParam1, PrefabFactorySpawnParams, TView>
+        {
+            BindFactory<TParam1, PrefabFactorySpawnParams, TView, TPlaceHolderFactory>()
+                .FromFactory<ViewFactory<TParam1, TView>>();
+
+            BindInstance(viewPrefab).WhenInjectedInto<ViewFactory<TParam1, TView>>();
+                
+            BindFactory<UnityEngine.Object, 
+                    ViewFactory<TParam1, TView>.Pool,
+                    ViewFactory<TParam1, TView>.PoolFactory>()
+                .FromSubContainerResolve()
+                .ByInstaller<ViewFactory<TParam1, TView>.PoolInstaller>();                
         }
 
         public FactoryToChoiceIdBinder<TParam1, TContract> BindFactoryCustomInterface<TParam1, TContract, TFactoryConcrete, TFactoryContract>()
