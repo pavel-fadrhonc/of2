@@ -3101,7 +3101,7 @@ namespace Zenject
                 .ByInstaller<PrefabFactoryNameBased<TParam1, TParam2, TParam3, TParam4, TContract>.PoolInstaller>();             
         }
 
-        public void BindViewFactory<TParam1, TView, TPlaceHolderFactory>(GameObject viewPrefab)
+        public void BindViewFactory<TParam1, TView, TPlaceHolderFactory>(TView viewPrefab)
             where TView : View<TParam1>
             where TPlaceHolderFactory : PlaceholderFactory<TParam1, PrefabFactorySpawnParams, TView>
         {
@@ -3117,7 +3117,7 @@ namespace Zenject
                 .ByInstaller<ViewFactory<TParam1, TView>.PoolInstaller>();                
         }
         
-        public void BindViewFactory<TParam1, TParam2, TView, TPlaceHolderFactory>(GameObject viewPrefab)
+        public void BindViewFactory<TParam1, TParam2, TView, TPlaceHolderFactory>(TView viewPrefab)
             where TView : View<TParam1, TParam2>
             where TPlaceHolderFactory : PlaceholderFactory<TParam1, TParam2, PrefabFactorySpawnParams, TView>
         {

@@ -8,7 +8,7 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
         where TView : View<TParam>
     {
         [Inject] 
-        private GameObject _prefab;
+        private TView _prefab;
         
         [Inject]
         PoolFactory _factory;
@@ -20,7 +20,7 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
 
             if (_pool == null)
             {
-                _pool = _factory.Create(_prefab);
+                _pool = _factory.Create(_prefab.gameObject);
             }
             
             var instance = _pool.Spawn();
@@ -67,7 +67,7 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
         where TView : View<TParam1, TParam2>
     {
         [Inject] 
-        private GameObject _prefab;
+        private TView _prefab;
         
         [Inject]
         PoolFactory _factory;
@@ -79,7 +79,7 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
 
             if (_pool == null)
             {
-                _pool = _factory.Create(_prefab);
+                _pool = _factory.Create(_prefab.gameObject);
             }
             
             var instance = _pool.Spawn();
