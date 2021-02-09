@@ -5,7 +5,8 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
     public abstract class MediatorBase<TView> : IMediator<TView> 
         where TView : View
     {
-        [Inject] protected TView view;
+        [Inject] protected TView _view;
+        [Inject] protected SignalBus _signalBus;
         
         public virtual void OnEnable()
         {
@@ -21,7 +22,8 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
     public abstract class MediatorBase<TView, TParam> : IMediator<TView, TParam> 
         where TView : View<TParam>
     {
-        [Inject] protected TView view;
+        [Inject] protected TView _view;
+        [Inject] protected SignalBus _signalBus;
 
         protected TParam param;
         
@@ -40,5 +42,31 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
             
         }
     }
+    
+    public abstract class MediatorBase<TView, TParam1, TParam2> : IMediator<TView, TParam1, TParam2> 
+        where TView : View<TParam1, TParam2>
+    {
+        [Inject] protected TView _view;
+        [Inject] protected SignalBus _signalBus;
+
+        protected TParam1 param1;
+        protected TParam2 param2;
+        
+        public void SetParams(TParam1 param1, TParam2 param2)
+        {
+            this.param1 = param1;
+            this.param2 = param2;
+        }
+
+        public virtual void OnEnable()
+        {
+            
+        }
+
+        public virtual void OnDisable()
+        {
+            
+        }
+    }    
 
 }

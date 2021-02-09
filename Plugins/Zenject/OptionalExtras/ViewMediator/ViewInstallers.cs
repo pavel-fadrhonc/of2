@@ -29,7 +29,7 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
         }
     }
     
-    public class ViewInstaller<TParam1, TView, TMediator1> : MonoInstaller
+    public class ViewInstaller1Param1Mediator<TParam1, TView, TMediator1> : MonoInstaller
         where TMediator1 : IMediator<View<TParam1>, TParam1>
         where TView : View<TParam1>
     {
@@ -40,9 +40,10 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
         }
     }
     
-    public class ViewInstaller<TParam1, TView, TMediator1, TMediator2> : MonoInstaller
+    public class ViewInstaller1Param2Mediators<TParam1, TView, TMediator1, TMediator2> : MonoInstaller
         where TMediator1 : IMediator<View<TParam1>, TParam1>
         where TMediator2 : IMediator<View<TParam1>, TParam1>
+        where TView : View<TParam1>
     {
         public override void InstallBindings()
         {
@@ -51,4 +52,27 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
             Container.Bind<TView>().FromInstance(GetComponent<TView>());
         }
     }
+    
+    public class ViewInstaller2Param1Mediator<TParam1, TParam2, TView, TMediator1> : MonoInstaller
+        where TMediator1 : IMediator<View<TParam1, TParam2>, TParam1, TParam2>
+        where TView : View<TParam1, TParam2>
+    {
+        public override void InstallBindings()
+        {
+            Container.Bind<IMediator<View<TParam1, TParam2>, TParam1, TParam2>>().To(typeof(TMediator1)).AsSingle();
+            Container.Bind<TView>().FromInstance(GetComponent<TView>());
+        }
+    }
+    
+    public class ViewInstaller2Params2Mediators<TParam1, TParam2, TView, TMediator1, TMediator2> : MonoInstaller
+        where TMediator1 : IMediator<View<TParam1, TParam2>, TParam1, TParam2>
+        where TMediator2 : IMediator<View<TParam1, TParam2>, TParam1, TParam2>
+        where TView : View<TParam1, TParam2>
+    {
+        public override void InstallBindings()
+        {
+            Container.Bind<IMediator<View<TParam1, TParam2>, TParam1, TParam2>>().To(typeof(TMediator1), typeof(TMediator2)).AsSingle();
+            Container.Bind<TView>().FromInstance(GetComponent<TView>());
+        }
+    }    
 }
