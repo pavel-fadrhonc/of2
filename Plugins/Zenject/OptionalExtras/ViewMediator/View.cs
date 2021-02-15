@@ -5,7 +5,27 @@ using Zenject;
 
 namespace Plugins.Zenject.OptionalExtras.ViewMediator
 {
-    public abstract class View : MonoBehaviour, IPoolable<IMemoryPool>, IDisposable
+    public abstract class ViewBase : MonoBehaviour, IDisposable
+    {
+        private IMemoryPool _pool;
+
+        public virtual void OnDespawned()
+        {
+            _pool = null;
+        }
+
+        public virtual void OnSpawned(IMemoryPool pool)
+        {
+            _pool = pool;
+        }
+
+        public virtual void Dispose()
+        {
+            _pool.Despawn(this);
+        }
+    }       
+    
+    public abstract class View : ViewBase, IPoolable<IMemoryPool>, IDisposable
     {
         private List<IMediator<View>> _mediators;
 
@@ -15,12 +35,10 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
         {
             _mediators = mediators;
         }
-        
-        private IMemoryPool _pool;
 
-        public void OnDespawned()
+        public override void OnDespawned()
         {
-            _pool = null;
+            base.OnDespawned();   
 
             foreach (var mediator in _mediators)
             {
@@ -28,23 +46,18 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
             }
         }
 
-        public void OnSpawned(IMemoryPool pool)
+        public override void OnSpawned(IMemoryPool pool)
         {
-            _pool = pool;
+            base.OnSpawned(pool);
             
             foreach (var mediator in _mediators)
             {
                 mediator.OnEnable();
             }
         }
-
-        public void Dispose()
-        {
-            _pool.Despawn(this);
-        }
     }    
     
-    public abstract class View<TParam> : MonoBehaviour, IPoolable<TParam, IMemoryPool>, IDisposable
+    public abstract class View<TParam> : ViewBase, IPoolable<TParam, IMemoryPool>, IDisposable
     {
         private List<IMediator<View<TParam>, TParam>> _mediators;
 
@@ -55,12 +68,11 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
             _mediators = mediators;
         }
         
-        private IMemoryPool _pool;
         private TParam _param;
         
-        public void OnDespawned()
+        public override void OnDespawned()
         {
-            _pool = null;
+            base.OnDespawned();
 
             foreach (var mediator in _mediators)
             {
@@ -70,7 +82,8 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
 
         public void OnSpawned(TParam param, IMemoryPool pool)
         {
-            _pool = pool;
+            base.OnSpawned(pool);
+            
             _param = param;
             
             foreach (var m in _mediators) m.SetParam(param);
@@ -80,14 +93,9 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
                 mediator.OnEnable();
             }
         }
-
-        public void Dispose()
-        {
-            _pool.Despawn(this);
-        }
     }
     
-    public abstract class View<TParam1, TParam2> : MonoBehaviour, IPoolable<TParam1, TParam2, IMemoryPool>, IDisposable
+    public abstract class View<TParam1, TParam2> : ViewBase, IPoolable<TParam1, TParam2, IMemoryPool>, IDisposable
     {
         private List<IMediator<View<TParam1, TParam2>, TParam1, TParam2>> _mediators;
 
@@ -98,13 +106,13 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
             _mediators = mediators;
         }
         
-        private IMemoryPool _pool;
         private TParam1 _param1;
         private TParam2 _param2;
+        private IMemoryPool _pool;
         
-        public void OnDespawned()
+        public override void OnDespawned()
         {
-            _pool = null;
+            base.OnDespawned();
 
             foreach (var mediator in _mediators)
             {
@@ -114,7 +122,8 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
 
         public void OnSpawned(TParam1 param1, TParam2 param2, IMemoryPool pool)
         {
-            _pool = pool;
+            base.OnSpawned(pool);
+            
             _param1 = param1;
             _param2 = param2;
             
@@ -124,11 +133,6 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
             {
                 mediator.OnEnable();
             }
-        }
-
-        public void Dispose()
-        {
-            _pool.Despawn(this);
         }
     }    
 }

@@ -1,6 +1,6 @@
 ﻿namespace Plugins.Zenject.OptionalExtras.ViewMediator
 {
-    public interface IMediator<out TView> where TView : View
+    public interface IMediator<out TView> where TView : ViewBase
     {
         void OnEnable();
 
