@@ -9,6 +9,8 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
     {
         private IMemoryPool _pool;
 
+        protected virtual void Initialize() {}
+        
         public virtual void OnDespawned()
         {
             _pool = null;
@@ -17,6 +19,8 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
         public virtual void OnSpawned(IMemoryPool pool)
         {
             _pool = pool;
+            
+            Initialize();
         }
 
         public virtual void Dispose()
