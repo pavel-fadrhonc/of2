@@ -32,9 +32,20 @@ namespace Plugins.Zenject.OptionalExtras.Signals.Unity.Editor
             var signalTypeValue = signalTypeField.GetValue(raiseSignal) as string;
             
             var currentTypeIdx = signalTypeValue != null && _signalTypesAssembly.Contains(signalTypeValue) ? _signalTypesAssembly.IndexOf(signalTypeValue) : 0;
-            var selectedTypeIdx = EditorGUILayout.Popup(currentTypeIdx, _signalTypesWithoutAssembly.ToArray());
 
-            if (currentTypeIdx != selectedTypeIdx)
+            EditorGUILayout.BeginHorizontal();
+            
+            GUILayout.Label(new GUIContent()
+            {
+                text = "Signal type: ",
+                tooltip = "Allows to select from any signal in the project that implements ISignal interface. If it has parameters and Odin plugin is in the project it offers to setup the signal parameters as well."
+            });
+            
+            var selectedTypeIdx = EditorGUILayout.Popup(currentTypeIdx, _signalTypesWithoutAssembly.ToArray());
+            
+            EditorGUILayout.EndHorizontal();
+
+            if (signalTypeValue == null || currentTypeIdx != selectedTypeIdx)
             {
                 signalTypeField.SetValue(raiseSignal, _signalTypesAssembly[selectedTypeIdx]);
                 raiseSignal.Init();
@@ -129,10 +140,20 @@ namespace Plugins.Zenject.OptionalExtras.Signals.Unity.Editor
             }
             
             parametersField.SetValue(raiseSignal, parameters);
-#else
+#endif
+            if (Application.isPlaying)
+            {
+                GUILayout.Space(10);
+                var raise = GUILayout.Button("Raise Signal");
+                if (raise)
+                    raiseSignal.Raise();
+            }
+
+
+#if !ODIN_INSPECTOR
             EditorGUILayout.HelpBox("Cannot serialize signal parameters. Include Odin and then you will be able to raise signal of any type inherited from ISignal with any parameters that are Unity-Serializable. Otherwise you can only raise signals without specifying parameters.", MessageType.Warning);
 #endif
-            
+
         }
     }
 }

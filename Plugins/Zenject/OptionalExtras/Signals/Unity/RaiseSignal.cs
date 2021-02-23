@@ -38,10 +38,7 @@ namespace Plugins.Zenject.OptionalExtras.Signals.Unity
             if (!_init)
                 Init();
         }
-
-    #if ODIN_INSPECTOR
-        [Button]
-    #endif
+        
         public void Raise()
         {
             var signal = Activator.CreateInstance(_signalTypeClass);
