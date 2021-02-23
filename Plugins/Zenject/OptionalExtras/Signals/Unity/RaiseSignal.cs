@@ -1,5 +1,6 @@
 ﻿#if ODIN_INSPECTOR
 using Sirenix.Serialization;
+using Sirenix.OdinInspector;
 #endif
 using System;
 using System.Collections.Generic;
