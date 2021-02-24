@@ -31,6 +31,7 @@ namespace Plugins.Zenject.OptionalExtras.Signals.Unity
         [Inject] 
         private SignalBus _signalBus;
 
+        [NonSerialized]
         private bool _init;
 
         private void OnEnable()
@@ -41,6 +42,9 @@ namespace Plugins.Zenject.OptionalExtras.Signals.Unity
         
         public void Raise()
         {
+            if (_signalTypeClass == null)
+                return;
+            
             var signal = Activator.CreateInstance(_signalTypeClass);
 
             for (var index = 0; index < _paramFieldInfos.Length; index++)
@@ -84,6 +88,13 @@ namespace Plugins.Zenject.OptionalExtras.Signals.Unity
                 return;
             
             _signalTypeClass = Type.GetType(_signalType);
+            if (_signalTypeClass == null)
+            {
+                Debug.LogWarning($"{gameObject.name},{nameof(RaiseSignal)}: Previously saved class of type {_signalType} cannot be found anymore. This can happen in case you renamed it or moved to another namespace/assembly. You need to set select the signal again otherwise the first one in list will get triggered by default.");
+                _signalType = null;
+                return;
+            }
+
             _paramFieldInfos = _signalTypeClass.GetFields();
 
             if (_parameters == null)
