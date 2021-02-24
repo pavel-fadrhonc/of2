@@ -70,41 +70,50 @@ namespace Plugins.Zenject.OptionalExtras.Signals.Unity.Editor
             }
             for (var index = 0; index < signalFields.Length; index++)
             {
-                var paramName = $"Param {index}";
-                
                 var signalField = signalFields[index];
                 object val = null;
+                var fieldName = signalField.Name;
 
                 if (typeof(UnityEngine.Object).IsAssignableFrom(signalField.FieldType))
                 {
-                    val = EditorGUILayout.ObjectField((parameters.Length > index ? parameters[index] : null) as UnityEngine.Object,
+                    val = EditorGUILayout.ObjectField(fieldName,(parameters.Length > index ? parameters[index] : null) as UnityEngine.Object,
                         signalField.FieldType, true);
                 }
                 else if (signalField.FieldType.IsAssignableFrom(typeof(UnityEngine.Bounds)))
                 {
-                    val = EditorGUILayout.BoundsField((UnityEngine.Bounds)(parameters.Length > index && parameters[index] != null  ? parameters[index] : new Bounds()));                    
+                    val = EditorGUILayout.BoundsField(fieldName,(UnityEngine.Bounds)(parameters.Length > index && parameters[index] != null  ? parameters[index] : new Bounds()));                    
                 }
                 else if (signalField.FieldType.IsAssignableFrom(typeof(UnityEngine.Color)))
                 {
-                    val = EditorGUILayout.ColorField((UnityEngine.Color) (parameters.Length > index && parameters[index] != null  ? parameters[index] : Color.black));
+                    val = EditorGUILayout.ColorField(fieldName,(UnityEngine.Color) (parameters.Length > index && parameters[index] != null  ? parameters[index] : Color.black));
                 }
                 else if (signalField.FieldType.IsAssignableFrom(typeof(UnityEngine.AnimationCurve)))
                 {
-                    val = EditorGUILayout.CurveField(
+                    val = EditorGUILayout.CurveField(fieldName,
                         (parameters.Length > index ? parameters[index] : null) as UnityEngine.AnimationCurve);
                 }
                 else if (signalField.FieldType.IsAssignableFrom(typeof(float)))
                 {
-                    val = EditorGUILayout.FloatField((float) (parameters.Length > index && parameters[index] != null  ? parameters[index] : 0f));
+                    val = EditorGUILayout.FloatField(fieldName,(float) (parameters.Length > index && parameters[index] != null  ? parameters[index] : 0f));
                 }
                 else if (signalField.FieldType.IsAssignableFrom(typeof(Gradient)))
                 {
-                    val = EditorGUILayout.GradientField(
+                    val = EditorGUILayout.GradientField(fieldName,
                         (parameters.Length > index ? parameters[index] : null) as UnityEngine.Gradient);
+                }
+                else if (signalField.FieldType.IsEnum)
+                {
+                    var enumIntVal = (int) (parameters.Length > index && parameters[index] != null ? parameters[index] : 0);
+                    var enumStrings = Enum.GetNames(signalField.FieldType);
+                    var enumInts = new List<int>(Enum.GetValues(signalField.FieldType) as int[]);
+                    var selectedIndex = enumInts.IndexOf(enumIntVal);
+                    if (selectedIndex == -1) selectedIndex = 0;
+                    var newSelectedIndex = EditorGUILayout.Popup(fieldName, selectedIndex, enumStrings);
+                    val = enumInts[newSelectedIndex];
                 }
                 else if (signalField.FieldType.IsAssignableFrom(typeof(int)))
                 {
-                    val = EditorGUILayout.IntField((int) (parameters.Length > index && parameters[index] != null ? parameters[index] : 0));
+                    val = EditorGUILayout.IntField(fieldName,(int) (parameters.Length > index && parameters[index] != null ? parameters[index] : 0));
                 }
                 // else if (signalField.FieldType.IsAssignableFrom(typeof(int)))
                 // {
@@ -112,19 +121,19 @@ namespace Plugins.Zenject.OptionalExtras.Signals.Unity.Editor
                 // }
                 else if (signalField.FieldType.IsAssignableFrom(typeof(Rect)))
                 {
-                    val = EditorGUILayout.RectField((Rect) (parameters.Length > index && parameters[index] != null  ? parameters[index] : new Rect()));
+                    val = EditorGUILayout.RectField(fieldName,(Rect) (parameters.Length > index && parameters[index] != null  ? parameters[index] : new Rect()));
                 }
                 else if (signalField.FieldType.IsAssignableFrom(typeof(Vector2)))
                 {
-                    val = EditorGUILayout.Vector2Field(paramName,(Vector2) (parameters.Length > index && parameters[index] != null  ? parameters[index] : Vector2.zero));
+                    val = EditorGUILayout.Vector2Field(fieldName,(Vector2) (parameters.Length > index && parameters[index] != null  ? parameters[index] : Vector2.zero));
                 }
                 else if (signalField.FieldType.IsAssignableFrom(typeof(Vector3)))
                 {
-                    val = EditorGUILayout.Vector2Field(paramName,(Vector3) (parameters.Length > index && parameters[index] != null  ? parameters[index] : Vector3.zero));
+                    val = EditorGUILayout.Vector2Field(fieldName,(Vector3) (parameters.Length > index && parameters[index] != null  ? parameters[index] : Vector3.zero));
                 }
                 else if (signalField.FieldType.IsAssignableFrom(typeof(Vector4)))
                 {
-                    val = EditorGUILayout.Vector2Field(paramName,(Vector4) (parameters.Length > index && parameters[index] != null  ? parameters[index] : Vector4.zero));
+                    val = EditorGUILayout.Vector2Field(fieldName,(Vector4) (parameters.Length > index && parameters[index] != null  ? parameters[index] : Vector4.zero));
                 }
                 else
                 {
