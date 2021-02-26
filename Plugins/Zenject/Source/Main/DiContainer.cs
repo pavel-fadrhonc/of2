@@ -3100,6 +3100,40 @@ namespace Zenject
                 .FromSubContainerResolve()
                 .ByInstaller<PrefabFactoryNameBased<TParam1, TParam2, TParam3, TParam4, TContract>.PoolInstaller>();             
         }
+        
+        /// <summary>
+        /// Make sure you also bind PrefabFactoryPoolable<TContract>.IPrefaFactoryPooledPrefabResolver outside of this.
+        /// </summary>
+        public void BindPoolablePrefabFactory<TContract, TPlaceHolderFactory>()
+            where TContract : Component, IPoolable<IMemoryPool> 
+            where TPlaceHolderFactory : PlaceholderFactory<PrefabFactorySpawnParams, TContract>
+        {
+            BindFactory<PrefabFactorySpawnParams, TContract, TPlaceHolderFactory>()
+                .FromFactory<PrefabFactoryPoolable<TContract>>();
+                
+            BindFactory<UnityEngine.Object,
+                    PrefabFactoryPoolable<TContract>.Pool,
+                    PrefabFactoryPoolable<TContract>.PoolFactory>()
+                .FromSubContainerResolve()
+                .ByInstaller<PrefabFactoryPoolable<TContract>.PoolInstaller>();             
+        }
+        
+        /// <summary>
+        /// Make sure you also bind PrefabFactoryPoolable<TParam1, TContract>.IPrefaFactoryPooledPrefabResolver outside of this.
+        /// </summary>
+        public void BindPoolablePrefabFactory<TParam1, TContract, TPlaceHolderFactory>()
+            where TContract : Component, IPoolable<TParam1, IMemoryPool> 
+            where TPlaceHolderFactory : PlaceholderFactory<TParam1, PrefabFactorySpawnParams, TContract>
+        {
+            BindFactory<TParam1, PrefabFactorySpawnParams, TContract, TPlaceHolderFactory>()
+                .FromFactory<PrefabFactoryPoolable<TParam1, TContract>>();
+            
+            BindFactory<UnityEngine.Object, 
+                    PrefabFactoryPoolable<TParam1, TContract>.Pool,
+                    PrefabFactoryPoolable<TParam1, TContract>.PoolFactory>()
+                .FromSubContainerResolve()
+                .ByInstaller<PrefabFactoryPoolable<TParam1, TContract>.PoolInstaller>();             
+        } 
 
         public void BindViewFactory<TParam1, TView, TPlaceHolderFactory>(TView viewPrefab)
             where TView : View<TParam1>

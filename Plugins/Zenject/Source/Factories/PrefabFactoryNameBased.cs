@@ -8,6 +8,16 @@ using Object = UnityEngine.Object;
 
 namespace Zenject
 {
+    /// <summary>
+    /// PrefabFactoryNameBased is able to pool instances of prefab by the name of the prefab.
+    /// It takes the prefab as the parameter and resolves Component TContract on it.
+    /// The prefab can or doesn't have to have GameObjectContext on it.
+    /// If the version where TContract is a component is used that it searches for the component on gameObject so it can or doesn't have to have it.
+    /// If the version where TContract is just a class is used than it resolves the subcontainer therefore is has to have GameObjectContext and Tcontract bound on it.
+    ///
+    /// the PrefabFactorySpawnParams purpose is to setup GO transform before OnSpawned gets called so it can safely assume it is on the right position.
+    /// </summary>
+
     public class PrefabFactorySpawnParams
     {
         public Vector3? position;
