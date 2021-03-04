@@ -6,6 +6,14 @@ using UnityEngine;
 
 namespace OakFramework2.Curves.Unity.Editor
 {
+    public enum EResetAxis
+    {
+        XY,
+        XZ,
+        YZ,
+        Custom
+    }
+    
     [CustomEditor(typeof(HermiteCurve))]
     public class HermiteCurveEditor : UnityEditor.Editor
     {
@@ -15,26 +23,38 @@ namespace OakFramework2.Curves.Unity.Editor
         private bool m_outTangentSelected = false;
         private bool m_lastMoveInTangent = false;
         private bool m_ShowCurveInfo = false;
+        private bool m_ShowTemplates = false;
         private bool m_MoveOnCurve;
         private float m_MoveOnCurveSpeed = 1;
         private EditorCoroutine m_MoveOnCurveCR;
+        private EResetAxis m_ResetAxis = EResetAxis.XY;
+        private Vector3 m_CustomResetAxis;
+        private float m_ResetLineLength = 1.0f;
+        private int m_ResetLineNumPoints = 3;
+
+        private SerializedProperty lockAxisProperty;
 
         Texture testText;
 
         private readonly int screenHeightOffset = 39;
 
         private readonly Color IntangetColor = Color.cyan; 
-        private readonly Color OuttangetColor = Color.magenta; 
+        private readonly Color OuttangetColor = Color.magenta;
+
+        public HermiteCurve.ELockAxisType LockAxisType
+        {
+            get => (HermiteCurve.ELockAxisType) lockAxisProperty.enumValueIndex;
+            set => lockAxisProperty.enumValueIndex = (int) value;
+        }
 
         private void OnEnable()
         {
             testText = Resources.Load<Texture>("Textures/testText");
+            lockAxisProperty = serializedObject.FindProperty("lockAxisType");
         }
 
         public override void OnInspectorGUI()
         {
-            
-            
             EditorGUILayout.HelpBox("Hold Shift and click to append and insert curve points. Backspace to delete points.", MessageType.Info);
             var curve = target as HermiteCurve;
             
@@ -45,10 +65,10 @@ namespace OakFramework2.Curves.Unity.Editor
 //                m_TimeEditorMode = !m_TimeEditorMode;
 //            }
             var curveMode = serializedObject.FindProperty("curveMode");
-            var editTimesBool = GUILayout.Toggle(curveMode.enumValueIndex == (int) HermiteCurve.eCurveMode.Times, "Edit Times", "button");
+            var editTimesBool = GUILayout.Toggle(curveMode.enumValueIndex == (int) HermiteCurve.ECurveMode.Times, "Edit Times", "button");
             if (editTimesBool)
             {
-                curveMode.enumValueIndex = (int) HermiteCurve.eCurveMode.Times;
+                curveMode.enumValueIndex = (int) HermiteCurve.ECurveMode.Times;
                 
                 GUILayout.BeginHorizontal();
                 curve.timeEditPointSize = EditorGUILayout.FloatField("Point size", curve.timeEditPointSize);
@@ -68,7 +88,7 @@ namespace OakFramework2.Curves.Unity.Editor
             }
             else
             {
-                curveMode.enumValueIndex = (int) HermiteCurve.eCurveMode.PointsAndTangents;
+                curveMode.enumValueIndex = (int) HermiteCurve.ECurveMode.PointsAndTangents;
             }
 
             GUILayout.BeginHorizontal();
@@ -151,7 +171,7 @@ namespace OakFramework2.Curves.Unity.Editor
                 (previousLength != tangentLengthControlLength.floatValue ||
                  previousApply != tangentLengthControlApply.boolValue))
             {
-                if (curve.editFilter == HermiteCurve.eEditFilter.all)
+                if (curve.editFilter == HermiteCurve.EEditFilter.all)
                 {
                     for (int pointIdx = 0; pointIdx < curve.points.Count; pointIdx++)
                     {
@@ -174,7 +194,7 @@ namespace OakFramework2.Curves.Unity.Editor
                         }
                     }
                 }
-                else if (curve.editFilter == HermiteCurve.eEditFilter.selected && m_hotIndex != -1)
+                else if (curve.editFilter == HermiteCurve.EEditFilter.selected && m_hotIndex != -1)
                 {
                     var point = curve.points[m_hotIndex];
                     
@@ -204,20 +224,20 @@ namespace OakFramework2.Curves.Unity.Editor
 
             var tangentEditModeProp = serializedObject.FindProperty("tangentEditMode");            
             
-            if (GUILayout.Toggle(tangentEditModeProp.enumValueIndex == (int) HermiteCurve.eTangentEditMode.free, "free", "button"))
-                tangentEditModeProp.enumValueIndex = (int) HermiteCurve.eTangentEditMode.free;
+            if (GUILayout.Toggle(tangentEditModeProp.enumValueIndex == (int) HermiteCurve.ETangentEditMode.free, "free", "button"))
+                tangentEditModeProp.enumValueIndex = (int) HermiteCurve.ETangentEditMode.free;
 
             var defaultBkgColor = GUI.backgroundColor;
 
-            DrawToggleWithColoredRectangles(IntangetColor, OuttangetColor, "in = out", tangentEditModeProp, (int) HermiteCurve.eTangentEditMode.in_out);
-            DrawToggleWithColoredRectangles(IntangetColor, OuttangetColor, "in = -out", tangentEditModeProp, (int) HermiteCurve.eTangentEditMode.in_neg_out);
-            DrawToggleWithColoredRectangles(IntangetColor, OuttangetColor, "in = dir(out)", tangentEditModeProp, (int) HermiteCurve.eTangentEditMode.in_dir_out);
-            DrawToggleWithColoredRectangles(IntangetColor, OuttangetColor, "in = -dir(out)", tangentEditModeProp, (int) HermiteCurve.eTangentEditMode.in_neg_dir_out);
+            DrawToggleWithColoredRectangles(IntangetColor, OuttangetColor, "in = out", tangentEditModeProp, (int) HermiteCurve.ETangentEditMode.in_out);
+            DrawToggleWithColoredRectangles(IntangetColor, OuttangetColor, "in = -out", tangentEditModeProp, (int) HermiteCurve.ETangentEditMode.in_neg_out);
+            DrawToggleWithColoredRectangles(IntangetColor, OuttangetColor, "in = dir(out)", tangentEditModeProp, (int) HermiteCurve.ETangentEditMode.in_dir_out);
+            DrawToggleWithColoredRectangles(IntangetColor, OuttangetColor, "in = -dir(out)", tangentEditModeProp, (int) HermiteCurve.ETangentEditMode.in_neg_dir_out);
             
-            DrawToggleWithColoredRectangles(OuttangetColor, IntangetColor, "out = in", tangentEditModeProp, (int) HermiteCurve.eTangentEditMode.out_in);
-            DrawToggleWithColoredRectangles(OuttangetColor, IntangetColor, "out = -in", tangentEditModeProp, (int) HermiteCurve.eTangentEditMode.out_neg_in);
-            DrawToggleWithColoredRectangles(OuttangetColor, IntangetColor, "out = dir(in)", tangentEditModeProp, (int) HermiteCurve.eTangentEditMode.out_dir_in);
-            DrawToggleWithColoredRectangles(OuttangetColor, IntangetColor, "out = -dir(in)", tangentEditModeProp, (int) HermiteCurve.eTangentEditMode.out_neg_dir_in);
+            DrawToggleWithColoredRectangles(OuttangetColor, IntangetColor, "out = in", tangentEditModeProp, (int) HermiteCurve.ETangentEditMode.out_in);
+            DrawToggleWithColoredRectangles(OuttangetColor, IntangetColor, "out = -in", tangentEditModeProp, (int) HermiteCurve.ETangentEditMode.out_neg_in);
+            DrawToggleWithColoredRectangles(OuttangetColor, IntangetColor, "out = dir(in)", tangentEditModeProp, (int) HermiteCurve.ETangentEditMode.out_dir_in);
+            DrawToggleWithColoredRectangles(OuttangetColor, IntangetColor, "out = -dir(in)", tangentEditModeProp, (int) HermiteCurve.ETangentEditMode.out_neg_dir_in);
 
             GUI.backgroundColor = defaultBkgColor;
             
@@ -230,22 +250,22 @@ namespace OakFramework2.Curves.Unity.Editor
             
             var editFilterProp = serializedObject.FindProperty("editFilter");
             
-            if (GUILayout.Toggle(editFilterProp.enumValueIndex == (int) HermiteCurve.eEditFilter.selected, "selected", "button"))
-                editFilterProp.enumValueIndex = (int) HermiteCurve.eEditFilter.selected;
-            if (GUILayout.Toggle(editFilterProp.enumValueIndex == (int) HermiteCurve.eEditFilter.all, "all", "button"))
-                editFilterProp.enumValueIndex = (int) HermiteCurve.eEditFilter.all;
+            if (GUILayout.Toggle(editFilterProp.enumValueIndex == (int) HermiteCurve.EEditFilter.selected, "selected", "button"))
+                editFilterProp.enumValueIndex = (int) HermiteCurve.EEditFilter.selected;
+            if (GUILayout.Toggle(editFilterProp.enumValueIndex == (int) HermiteCurve.EEditFilter.all, "all", "button"))
+                editFilterProp.enumValueIndex = (int) HermiteCurve.EEditFilter.all;
             
             GUILayout.EndHorizontal();
 
             switch (curve.editFilter)
             {
-                case HermiteCurve.eEditFilter.selected:
+                case HermiteCurve.EEditFilter.selected:
                     if (m_hotIndex < 0)
                         break;
 
                     ApplyEditMode(inTangents, outTangents, curve.tangentEditMode, m_hotIndex, curve);
                     break;
-                case HermiteCurve.eEditFilter.all:
+                case HermiteCurve.EEditFilter.all:
                     for (int i = 0; i < curve.points.Count; i++)
                     {
                         ApplyEditMode(inTangents, outTangents, curve.tangentEditMode, i, curve);
@@ -263,23 +283,23 @@ namespace OakFramework2.Curves.Unity.Editor
             EditorGUILayout.LabelField("Tangent View Option", guiStyle);
             var tangentViewProp = serializedObject.FindProperty("tangentViewOptions");
             
-            if (GUILayout.Toggle((tangentViewProp.intValue & (int) HermiteCurve.eTangentViewOptions.selectedPoint) != 0, "selected point", "button"))
-                tangentViewProp.intValue |= (int) HermiteCurve.eTangentViewOptions.selectedPoint;
+            if (GUILayout.Toggle((tangentViewProp.intValue & (int) HermiteCurve.ETangentViewOptions.selectedPoint) != 0, "selected point", "button"))
+                tangentViewProp.intValue |= (int) HermiteCurve.ETangentViewOptions.selectedPoint;
             else
-                tangentViewProp.intValue &= ~((int) HermiteCurve.eTangentViewOptions.selectedPoint);
+                tangentViewProp.intValue &= ~((int) HermiteCurve.ETangentViewOptions.selectedPoint);
             
-            if (GUILayout.Toggle((tangentViewProp.intValue & (int) HermiteCurve.eTangentViewOptions.closePoint) != 0 , "close to point", "button"))
-                tangentViewProp.intValue |= (int) HermiteCurve.eTangentViewOptions.closePoint;
+            if (GUILayout.Toggle((tangentViewProp.intValue & (int) HermiteCurve.ETangentViewOptions.closePoint) != 0 , "close to point", "button"))
+                tangentViewProp.intValue |= (int) HermiteCurve.ETangentViewOptions.closePoint;
             else
-                tangentViewProp.intValue &= ~((int) HermiteCurve.eTangentViewOptions.closePoint);
+                tangentViewProp.intValue &= ~((int) HermiteCurve.ETangentViewOptions.closePoint);
             
-            if (GUILayout.Toggle((tangentViewProp.intValue & (int) HermiteCurve.eTangentViewOptions.selectedCurve) != 0, "selected curve", "button"))
-                tangentViewProp.intValue |= (int) HermiteCurve.eTangentViewOptions.selectedCurve;
+            if (GUILayout.Toggle((tangentViewProp.intValue & (int) HermiteCurve.ETangentViewOptions.selectedCurve) != 0, "selected curve", "button"))
+                tangentViewProp.intValue |= (int) HermiteCurve.ETangentViewOptions.selectedCurve;
             else
-                tangentViewProp.intValue &= ~((int) HermiteCurve.eTangentViewOptions.selectedCurve);            
+                tangentViewProp.intValue &= ~((int) HermiteCurve.ETangentViewOptions.selectedCurve);            
             
-            if (GUILayout.Toggle(tangentViewProp.intValue ==  (int) HermiteCurve.eTangentViewOptions.always, "always", "button"))
-                tangentViewProp.intValue = (int) HermiteCurve.eTangentViewOptions.always;
+            if (GUILayout.Toggle(tangentViewProp.intValue ==  (int) HermiteCurve.ETangentViewOptions.always, "always", "button"))
+                tangentViewProp.intValue = (int) HermiteCurve.ETangentViewOptions.always;
 
             
             #endregion
@@ -297,13 +317,13 @@ namespace OakFramework2.Curves.Unity.Editor
                     var pointDif = localXPos - point.vector3Value.x;                    
                     point.vector3Value = new Vector3(point.vector3Value.x + pointDif, point.vector3Value.y, point.vector3Value.z);
                     
-                    if (curve.tangentFlattenOptions == HermiteCurve.eTangentFlatteningOptions.Move ||
-                        curve.tangentFlattenOptions == HermiteCurve.eTangentFlatteningOptions.Flatten)
+                    if (curve.tangentFlattenOptions == HermiteCurve.ETangentFlatteningOptions.Move ||
+                        curve.tangentFlattenOptions == HermiteCurve.ETangentFlatteningOptions.Flatten)
                     {
                         if (i > 0)
                         {
                             var inTangent = inTangents.GetArrayElementAtIndex(i - 1);
-                            if (curve.tangentFlattenOptions == HermiteCurve.eTangentFlatteningOptions.Move)
+                            if (curve.tangentFlattenOptions == HermiteCurve.ETangentFlatteningOptions.Move)
                                 inTangent.vector3Value = new Vector3(inTangent.vector3Value.x + pointDif, inTangent.vector3Value.y, inTangent.vector3Value.z);
                             else
                                 inTangent.vector3Value = new Vector3(localXPos, inTangent.vector3Value.y, inTangent.vector3Value.z);
@@ -311,7 +331,7 @@ namespace OakFramework2.Curves.Unity.Editor
                         if (i < curve.points.Count - 1)
                         {   
                             var outTangent = outTangents.GetArrayElementAtIndex(i);
-                            if (curve.tangentFlattenOptions == HermiteCurve.eTangentFlatteningOptions.Move)
+                            if (curve.tangentFlattenOptions == HermiteCurve.ETangentFlatteningOptions.Move)
                                 outTangent.vector3Value = new Vector3(outTangent.vector3Value.x + pointDif, outTangent.vector3Value.y, outTangent.vector3Value.z);
                             else
                                 outTangent.vector3Value = new Vector3(localXPos, outTangent.vector3Value.y, outTangent.vector3Value.z);
@@ -328,13 +348,13 @@ namespace OakFramework2.Curves.Unity.Editor
                     var pointDif = localYPos - point.vector3Value.y;                    
                     point.vector3Value = new Vector3(point.vector3Value.x , point.vector3Value.y+ pointDif, point.vector3Value.z);
                     
-                    if (curve.tangentFlattenOptions == HermiteCurve.eTangentFlatteningOptions.Move ||
-                        curve.tangentFlattenOptions == HermiteCurve.eTangentFlatteningOptions.Flatten)
+                    if (curve.tangentFlattenOptions == HermiteCurve.ETangentFlatteningOptions.Move ||
+                        curve.tangentFlattenOptions == HermiteCurve.ETangentFlatteningOptions.Flatten)
                     {
                         if (i > 0)
                         {
                             var inTangent = inTangents.GetArrayElementAtIndex(i - 1);
-                            if (curve.tangentFlattenOptions == HermiteCurve.eTangentFlatteningOptions.Move)
+                            if (curve.tangentFlattenOptions == HermiteCurve.ETangentFlatteningOptions.Move)
                                 inTangent.vector3Value = new Vector3(inTangent.vector3Value.x, inTangent.vector3Value.y + pointDif, inTangent.vector3Value.z);
                             else
                                 inTangent.vector3Value = new Vector3(inTangent.vector3Value.x, localYPos, inTangent.vector3Value.z);
@@ -342,7 +362,7 @@ namespace OakFramework2.Curves.Unity.Editor
                         if (i < curve.points.Count - 1)
                         {   
                             var outTangent = outTangents.GetArrayElementAtIndex(i);
-                            if (curve.tangentFlattenOptions == HermiteCurve.eTangentFlatteningOptions.Move)
+                            if (curve.tangentFlattenOptions == HermiteCurve.ETangentFlatteningOptions.Move)
                                 outTangent.vector3Value = new Vector3(outTangent.vector3Value.x, outTangent.vector3Value.y + pointDif, outTangent.vector3Value.z);
                             else
                                 outTangent.vector3Value = new Vector3(outTangent.vector3Value.x, localYPos, outTangent.vector3Value.z);
@@ -359,13 +379,13 @@ namespace OakFramework2.Curves.Unity.Editor
                     var pointDif = localZPos - point.vector3Value.z;
                     point.vector3Value = new Vector3(point.vector3Value.x , point.vector3Value.y, point.vector3Value.z+ pointDif);
 
-                    if (curve.tangentFlattenOptions == HermiteCurve.eTangentFlatteningOptions.Move ||
-                        curve.tangentFlattenOptions == HermiteCurve.eTangentFlatteningOptions.Flatten)
+                    if (curve.tangentFlattenOptions == HermiteCurve.ETangentFlatteningOptions.Move ||
+                        curve.tangentFlattenOptions == HermiteCurve.ETangentFlatteningOptions.Flatten)
                     {
                         if (i > 0)
                         {
                             var inTangent = inTangents.GetArrayElementAtIndex(i - 1);
-                            if (curve.tangentFlattenOptions == HermiteCurve.eTangentFlatteningOptions.Move)
+                            if (curve.tangentFlattenOptions == HermiteCurve.ETangentFlatteningOptions.Move)
                                 inTangent.vector3Value = new Vector3(inTangent.vector3Value.x , inTangent.vector3Value.y, inTangent.vector3Value.z+ pointDif);
                             else
                                 inTangent.vector3Value = new Vector3(inTangent.vector3Value.x , inTangent.vector3Value.y, localZPos);
@@ -373,7 +393,7 @@ namespace OakFramework2.Curves.Unity.Editor
                         if (i < curve.points.Count - 1)
                         {   
                             var outTangent = outTangents.GetArrayElementAtIndex(i);
-                            if (curve.tangentFlattenOptions == HermiteCurve.eTangentFlatteningOptions.Move)
+                            if (curve.tangentFlattenOptions == HermiteCurve.ETangentFlatteningOptions.Move)
                                 outTangent.vector3Value = new Vector3(outTangent.vector3Value.x , outTangent.vector3Value.y, outTangent.vector3Value.z+ pointDif);
                             else
                                 outTangent.vector3Value = new Vector3(outTangent.vector3Value.x , outTangent.vector3Value.y, localZPos);
@@ -388,18 +408,44 @@ namespace OakFramework2.Curves.Unity.Editor
             
             GUILayout.BeginHorizontal();
             
-            if (GUILayout.Toggle(tangentFlattenOption.enumValueIndex == (int) HermiteCurve.eTangentFlatteningOptions.Keep, "Keep","button"))
+            if (GUILayout.Toggle(tangentFlattenOption.enumValueIndex == (int) HermiteCurve.ETangentFlatteningOptions.Keep, "Keep","button"))
             {
-                tangentFlattenOption.enumValueIndex = (int) HermiteCurve.eTangentFlatteningOptions.Keep;
+                tangentFlattenOption.enumValueIndex = (int) HermiteCurve.ETangentFlatteningOptions.Keep;
             }
-            if (GUILayout.Toggle(tangentFlattenOption.enumValueIndex == (int) HermiteCurve.eTangentFlatteningOptions.Move, "Move","button"))
+            if (GUILayout.Toggle(tangentFlattenOption.enumValueIndex == (int) HermiteCurve.ETangentFlatteningOptions.Move, "Move","button"))
             {
-                tangentFlattenOption.enumValueIndex = (int) HermiteCurve.eTangentFlatteningOptions.Move;
+                tangentFlattenOption.enumValueIndex = (int) HermiteCurve.ETangentFlatteningOptions.Move;
             }
-            if (GUILayout.Toggle(tangentFlattenOption.enumValueIndex == (int) HermiteCurve.eTangentFlatteningOptions.Flatten, "Flatten","button"))
+            if (GUILayout.Toggle(tangentFlattenOption.enumValueIndex == (int) HermiteCurve.ETangentFlatteningOptions.Flatten, "Flatten","button"))
             {
-                tangentFlattenOption.enumValueIndex = (int) HermiteCurve.eTangentFlatteningOptions.Flatten;
+                tangentFlattenOption.enumValueIndex = (int) HermiteCurve.ETangentFlatteningOptions.Flatten;
             }            
+            
+            GUILayout.EndHorizontal();
+            
+            #endregion
+            
+            #region LOCK AXIS
+            
+            EditorGUILayout.LabelField("Lock Axis", guiStyle);
+
+            GUILayout.BeginHorizontal();
+            
+            var lockAxisNone = GUILayout.Toggle(LockAxisType == HermiteCurve.ELockAxisType.None, "None", "button");
+            if (lockAxisNone)
+                LockAxisType = HermiteCurve.ELockAxisType.None;
+            
+            var lockAxisX = GUILayout.Toggle(LockAxisType == HermiteCurve.ELockAxisType.X, "X", "button");
+            if (lockAxisX)
+                LockAxisType = HermiteCurve.ELockAxisType.X;
+            
+            var lockAxisY = GUILayout.Toggle(LockAxisType == HermiteCurve.ELockAxisType.Y, "Y", "button");
+            if (lockAxisY)
+                LockAxisType = HermiteCurve.ELockAxisType.Y;
+            
+            var lockAxisZ = GUILayout.Toggle(LockAxisType == HermiteCurve.ELockAxisType.Z, "Z", "button");
+            if (lockAxisZ)
+                LockAxisType = HermiteCurve.ELockAxisType.Z;
             
             GUILayout.EndHorizontal();
             
@@ -485,8 +531,109 @@ namespace OakFramework2.Curves.Unity.Editor
 
             #endregion
             
+            #region TEMPLATES
+            
+            m_ShowTemplates = EditorGUILayout.Foldout(m_ShowTemplates, "Templates");
+            if (m_ShowTemplates)
+            {
+                EditorGUILayout.LabelField("Axis", guiStyle);
+                    
+                GUILayout.BeginHorizontal();
+                
+                var AxisXY = GUILayout.Toggle(m_ResetAxis == EResetAxis.XY, "XY", "button");
+                if (AxisXY)
+                    m_ResetAxis = EResetAxis.XY;
+                
+                var AxisXZ = GUILayout.Toggle(m_ResetAxis == EResetAxis.XZ, "XZ", "button");
+                if (AxisXZ)
+                    m_ResetAxis = EResetAxis.XZ;
+
+                var AxisYZ = GUILayout.Toggle(m_ResetAxis == EResetAxis.YZ, "YZ", "button");
+                if (AxisYZ)
+                    m_ResetAxis = EResetAxis.YZ;
+                
+                var AxisCustom = GUILayout.Toggle(m_ResetAxis == EResetAxis.Custom, "Custom", "button");
+                if (AxisCustom)
+                {
+                    m_ResetAxis = EResetAxis.Custom;
+                    m_CustomResetAxis = EditorGUILayout.Vector3Field("Custom Axis", m_CustomResetAxis);
+                }
+                
+                GUILayout.EndHorizontal();                
+
+                m_ResetLineLength = EditorGUILayout.FloatField("Line Length", m_ResetLineLength);
+                m_ResetLineNumPoints = EditorGUILayout.IntField("Number of Points", m_ResetLineNumPoints);
+
+                var doReset = GUILayout.Button("Reset curve to this template");
+                if (doReset)
+                {
+                    Vector3 resetAxis;
+                    switch (m_ResetAxis)
+                    {
+                        case EResetAxis.XY:
+                            resetAxis = Vector3.right;
+                            break;
+                        case EResetAxis.XZ:
+                            resetAxis = Vector3.right;
+                            break;
+                        case EResetAxis.YZ:
+                            resetAxis = Vector3.forward;
+                            break;
+                        case EResetAxis.Custom:
+                            resetAxis = m_CustomResetAxis;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
+                    curve.Reset(resetAxis, m_ResetLineNumPoints, m_ResetLineLength);
+
+                    serializedObject.Update();
+                    
+                    for (int i = 0; i < curve.points.Count; i++)
+                    {
+                        Vector3 newTangentPos = curve.points[i];
+                        int sign = (i % 2 == 0 ? 1 : -1);
+                        float circleSize = m_ResetLineLength;
+                        switch (m_ResetAxis)
+                        {
+                            case EResetAxis.XY:
+                                newTangentPos += sign * circleSize * Vector3.up; 
+                                break;
+                            case EResetAxis.XZ:
+                                newTangentPos += sign * circleSize * Vector3.forward;
+                                break;
+                            case EResetAxis.YZ:
+                                newTangentPos += sign * circleSize * Vector3.up;
+                                break;
+                            case EResetAxis.Custom:
+                                newTangentPos += sign * circleSize * Vector3.Cross(m_CustomResetAxis, Vector3.forward).normalized;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                    
+                        if (i > 0)
+                        {
+                            var inTangent = inTangents.GetArrayElementAtIndex(i - 1);
+                            SetNewTangentPos(inTangent, newTangentPos, curve, i, true, false);
+                        }
+
+                        if (i < curve.points.Count - 1)
+                        {
+                            var outTangent = outTangents.GetArrayElementAtIndex(i);
+                            SetNewTangentPos(outTangent, newTangentPos, curve, i, true, false);
+                        }
+                    }
+                    
+                    serializedObject.ApplyModifiedProperties();
+                }
+            }
+
+            #endregion
+
+            serializedObject.ApplyModifiedProperties();            
             curve.ValidateData();
-            serializedObject.ApplyModifiedProperties();
             SceneView.RepaintAll();
         }
 
@@ -500,20 +647,54 @@ namespace OakFramework2.Curves.Unity.Editor
             }
         }
         
-        private void SetNewTangentPos(SerializedProperty tangent, Vector3 newPos, HermiteCurve curve, int pointIdx, bool applyFilter = true)
+        private void SetNewTangentPos(SerializedProperty tangent, Vector3 newPos, HermiteCurve curve, int pointIdx, bool applyFilter = true, bool applyLockAxis = false)
         {
+            var newPosFinal = newPos;
+            
             if (applyFilter && curve.tangentLengthControlApply
-                    && (curve.editFilter == HermiteCurve.eEditFilter.all ||
-                        (curve.editFilter == HermiteCurve.eEditFilter.selected))
+                    && (curve.editFilter == HermiteCurve.EEditFilter.all ||
+                        (curve.editFilter == HermiteCurve.EEditFilter.selected))
                 )
             {
                 var point = curve.points[pointIdx];
-                tangent.vector3Value = (newPos - point).normalized *  curve.tangentLengthControlLength + point;
+                newPosFinal = (newPos - point).normalized *  curve.tangentLengthControlLength + point;
             }   
             else if (!applyFilter || !curve.tangentLengthControlApply)
             {
-                tangent.vector3Value = newPos;
+                newPosFinal = newPos;
             }
+            
+            if (applyLockAxis)
+            {
+                SetPointPosition(tangent, newPosFinal);
+            }
+            else
+            {
+                tangent.vector3Value = newPosFinal;
+            }
+        }
+        
+        private void SetPointPosition(SerializedProperty pointProperty, Vector3 pos)
+        {
+            var newPos = pos;
+            switch (LockAxisType)
+            {
+                case HermiteCurve.ELockAxisType.None:
+                    break;
+                case HermiteCurve.ELockAxisType.X:
+                    newPos = new Vector3(pointProperty.vector3Value.x, newPos.y, newPos.z); 
+                    break;
+                case HermiteCurve.ELockAxisType.Y:
+                    newPos = new Vector3(newPos.x, pointProperty.vector3Value.y, newPos.z);
+                    break;
+                case HermiteCurve.ELockAxisType.Z:
+                    newPos = new Vector3(newPos.x, newPos.y, pointProperty.vector3Value.z);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            pointProperty.vector3Value = newPos;
         }
 
         private void DrawToggleWithColoredRectangles(Color rect1Col, Color rect2Col, string toggleText, SerializedProperty showedProperty, int enumValue)
@@ -534,7 +715,7 @@ namespace OakFramework2.Curves.Unity.Editor
         }
 
         private void ApplyEditMode(SerializedProperty inTangents, SerializedProperty outTangents, 
-            HermiteCurve.eTangentEditMode tangentEditMode, int pointIndex, HermiteCurve curve)
+            HermiteCurve.ETangentEditMode tangentEditMode, int pointIndex, HermiteCurve curve)
         {
             SerializedProperty ot = null;   
             SerializedProperty it = null;
@@ -555,13 +736,13 @@ namespace OakFramework2.Curves.Unity.Editor
             
             switch (tangentEditMode)
             {
-                case HermiteCurve.eTangentEditMode.in_out:
+                case HermiteCurve.ETangentEditMode.in_out:
                     newIntangPos = outPos;
                     break;
-                case HermiteCurve.eTangentEditMode.in_neg_out:
+                case HermiteCurve.ETangentEditMode.in_neg_out:
                     newIntangPos = point -(outPos - point);
                     break;
-                case HermiteCurve.eTangentEditMode.in_dir_out:
+                case HermiteCurve.ETangentEditMode.in_dir_out:
                     if (Vector3.Dot(inPos - point, outPos - point) < 0)
                     {
                         newIntangPos = point + (outPos - point) * 0.1f;
@@ -571,7 +752,7 @@ namespace OakFramework2.Curves.Unity.Editor
                         newIntangPos = point + Vector3.Project(inPos - point, outPos - point);
                     }
                     break;
-                case HermiteCurve.eTangentEditMode.in_neg_dir_out:
+                case HermiteCurve.ETangentEditMode.in_neg_dir_out:
                     if (Vector3.Dot(inPos - point, outPos - point) > 0)
                     {
                         newIntangPos = point + (outPos - point) * -0.1f;
@@ -581,13 +762,13 @@ namespace OakFramework2.Curves.Unity.Editor
                         newIntangPos = point + Vector3.Project(inPos - point, -(outPos - point));
                     }
                     break;
-                case HermiteCurve.eTangentEditMode.out_in:
+                case HermiteCurve.ETangentEditMode.out_in:
                     newOuttangPos = inPos;
                     break;
-                case HermiteCurve.eTangentEditMode.out_neg_in:
+                case HermiteCurve.ETangentEditMode.out_neg_in:
                     newOuttangPos = point-(inPos - point);
                     break;
-                case HermiteCurve.eTangentEditMode.out_dir_in:
+                case HermiteCurve.ETangentEditMode.out_dir_in:
                     if (Vector3.Dot(outPos- point, inPos- point) < 0)
                     {
                         newOuttangPos = point + (inPos - point) * 0.1f;
@@ -597,7 +778,7 @@ namespace OakFramework2.Curves.Unity.Editor
                         newOuttangPos = point + Vector3.Project(outPos - point, inPos - point);
                     }
                     break;
-                case HermiteCurve.eTangentEditMode.out_neg_dir_in:
+                case HermiteCurve.ETangentEditMode.out_neg_dir_in:
                     if (Vector3.Dot(outPos- point, inPos- point) > 0)
                     {
                         newOuttangPos = point + (inPos - point) * -0.1f;
@@ -642,7 +823,7 @@ namespace OakFramework2.Curves.Unity.Editor
             var mouseIsOutside = view.x < 0 || view.x > 1 || view.y < 0 || view.y > 1;
             if (mouseIsOutside)
             {
-                if (curve.tangentViewOptions == (int) HermiteCurve.eTangentViewOptions.always)
+                if (curve.tangentViewOptions == (int) HermiteCurve.ETangentViewOptions.always)
                 {
                     for (int pointIdx = 0; pointIdx < curve.points.Count; pointIdx++)
                     {
@@ -654,7 +835,7 @@ namespace OakFramework2.Curves.Unity.Editor
                     DrawTangents(m_hotIndex, curve, true);
                 }
 
-                if (curve.curveMode == HermiteCurve.eCurveMode.Times)
+                if (curve.curveMode == HermiteCurve.ECurveMode.Times)
                 {
                     for (int pointIdx = 0; pointIdx < curve.points.Count; pointIdx++)
                     {
@@ -693,7 +874,7 @@ namespace OakFramework2.Curves.Unity.Editor
 //                GUILayout.EndArea();
 //                Handles.EndGUI();
 
-                if (curve.curveMode == HermiteCurve.eCurveMode.PointsAndTangents)
+                if (curve.curveMode == HermiteCurve.ECurveMode.PointsAndTangents)
                 {
                     if (m_hotIndex == i)
                     {
@@ -701,11 +882,11 @@ namespace OakFramework2.Curves.Unity.Editor
                         var delta = curve.transform.InverseTransformDirection(newWp - wp);
                         if (delta.sqrMagnitude > 0)
                         {
-                            prop.vector3Value = point + delta;
+                            SetPointPosition(prop, point + delta);
                             if (curve.closed && i == 0)
                             { // adjust also last point and last intangent
                                 var lastPoint = points.GetArrayElementAtIndex(curve.points.Count - 1);
-                                lastPoint.vector3Value = point + delta;
+                                SetPointPosition(lastPoint, point + delta);
 
                                 var lastInTangent = inTangents.GetArrayElementAtIndex(curve.inTangents.Count - 1);
                                 SetNewTangentPos(lastInTangent, lastInTangent.vector3Value + delta, curve, i);
@@ -715,12 +896,12 @@ namespace OakFramework2.Curves.Unity.Editor
                             if (m_hotIndex > 0)
                             {
                                 var inTangent = inTangents.GetArrayElementAtIndex(m_hotIndex - 1);
-                                SetNewTangentPos(inTangent, inTangent.vector3Value + delta, curve, i);                                
+                                SetNewTangentPos(inTangent, inTangent.vector3Value + delta, curve, i, true, true);                                
                             }
                             if (m_hotIndex < curve.points.Count - 1)
                             {   
                                 var outTangent = outTangents.GetArrayElementAtIndex(m_hotIndex);
-                                SetNewTangentPos(outTangent, outTangent.vector3Value + delta, curve, i);                                
+                                SetNewTangentPos(outTangent, outTangent.vector3Value + delta, curve, i, true, true);                                
                             }
                         
                             curve.ResetIndex();
@@ -739,15 +920,15 @@ namespace OakFramework2.Curves.Unity.Editor
                     SetHotIndex(i);
                 }
 
-                if (curve.curveMode == HermiteCurve.eCurveMode.Times)
+                if (curve.curveMode == HermiteCurve.ECurveMode.Times)
                     DrawTimeControl(curve, i, wp);
                 
                 // if user is close to handle or the handle is selected, draw the tangents
-                if ((m_hotIndex == i && (curve.tangentViewOptions & (int) HermiteCurve.eTangentViewOptions.selectedPoint) != 0) || 
-                    (mouseIsCloseToPoint && (curve.tangentViewOptions & (int) HermiteCurve.eTangentViewOptions.closePoint) != 0) ||
-                    ((curve.tangentViewOptions & (int) HermiteCurve.eTangentViewOptions.selectedCurve) != 0))
+                if ((m_hotIndex == i && (curve.tangentViewOptions & (int) HermiteCurve.ETangentViewOptions.selectedPoint) != 0) || 
+                    (mouseIsCloseToPoint && (curve.tangentViewOptions & (int) HermiteCurve.ETangentViewOptions.closePoint) != 0) ||
+                    ((curve.tangentViewOptions & (int) HermiteCurve.ETangentViewOptions.selectedCurve) != 0))
                 {
-                    if (curve.curveMode == HermiteCurve.eCurveMode.PointsAndTangents)
+                    if (curve.curveMode == HermiteCurve.ECurveMode.PointsAndTangents)
                     {
                         if (curve.closed && i == 0)
                             DrawTangents(curve.points.Count - 1, curve);
@@ -771,7 +952,7 @@ namespace OakFramework2.Curves.Unity.Editor
                     
                     if (m_hotIndex >= 0)
                         ApplyEditMode(inTangents, outTangents, curve.tangentEditMode, m_hotIndex, curve);
-                    if ((curve.tangentViewOptions & (int) HermiteCurve.eTangentViewOptions.selectedCurve) != 0 && i > 0 && i != m_hotIndex)
+                    if ((curve.tangentViewOptions & (int) HermiteCurve.ETangentViewOptions.selectedCurve) != 0 && i > 0 && i != m_hotIndex)
                         ApplyEditMode(inTangents, outTangents, curve.tangentEditMode, i, curve);
                 }
                 
@@ -794,7 +975,7 @@ namespace OakFramework2.Curves.Unity.Editor
                     ShowClosestPointOnOpenCurve(points);
             }
             
-            if (m_removeIndex >= 0 && points.arraySize > 3)
+            if (m_removeIndex >= 0 && points.arraySize > 4)
             {
                 if (curve.closed && m_removeIndex == 0)
                 {
@@ -1069,24 +1250,41 @@ namespace OakFramework2.Curves.Unity.Editor
                     
                     points.InsertArrayElementAtIndex(newIdx);
                     curve.ValidateData();
-                    points.GetArrayElementAtIndex(newIdx).vector3Value = curve.transform.InverseTransformPoint(sp);
+                    SetPointPosition(points.GetArrayElementAtIndex(newIdx), curve.transform.InverseTransformPoint(sp));
                     serializedObject.ApplyModifiedProperties();
                     SetHotIndex(newIdx);
                 }
             }
         }
 
+
+
         void ShowClosestPointOnOpenCurve(SerializedProperty points)
         {
             var curve = target as HermiteCurve;
-            var plane = new Plane(curve.transform.up, curve.transform.position);
+
+            var planeNormal = curve.transform.up;
+            switch (LockAxisType)
+            {
+                case HermiteCurve.ELockAxisType.X:
+                    planeNormal = Vector3.right;
+                    break;
+                case HermiteCurve.ELockAxisType.Y:
+                    planeNormal = Vector3.up;
+                    break;
+                case HermiteCurve.ELockAxisType.Z:
+                    planeNormal = Vector3.forward;
+                    break;
+            }
+            
+            var plane = new Plane(planeNormal, curve.transform.position);
             var ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
             float center;
             if (plane.Raycast(ray, out center))
             {
                 var hit = ray.origin + ray.direction * center;
                 var discSize = HandleUtility.GetHandleSize(hit);
-                Handles.DrawWireDisc(hit, curve.transform.up, discSize);
+                Handles.DrawWireDisc(hit, planeNormal, discSize);
                 var p = SearchForClosestPoint(Event.current.mousePosition);
                 
                 if ((hit - curve.GetNonUniformPoint(0)).sqrMagnitude < 25) p = 0;
@@ -1115,7 +1313,8 @@ namespace OakFramework2.Curves.Unity.Editor
                     if (extend)
                     {
                         points.InsertArrayElementAtIndex(newIdx);
-                        points.GetArrayElementAtIndex(newIdx).vector3Value = curve.transform.InverseTransformPoint(hit);
+                        SetPointPosition(points.GetArrayElementAtIndex(newIdx),
+                            curve.transform.InverseTransformPoint(hit));
                         if (newIdx == curve.points.Count - 1)
                             points.MoveArrayElement(newIdx, newIdx + 1);
                         SetHotIndex(newIdx);
@@ -1123,7 +1322,8 @@ namespace OakFramework2.Curves.Unity.Editor
                     else
                     {
                         points.InsertArrayElementAtIndex(newIdx);
-                        points.GetArrayElementAtIndex(newIdx).vector3Value = curve.transform.InverseTransformPoint(sp);
+                        SetPointPosition(points.GetArrayElementAtIndex(newIdx),
+                            curve.transform.InverseTransformPoint(sp));
                         SetHotIndex(newIdx);
                     }
                     serializedObject.ApplyModifiedProperties();

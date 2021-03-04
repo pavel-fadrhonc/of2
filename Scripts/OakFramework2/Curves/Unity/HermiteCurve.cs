@@ -269,20 +269,30 @@ namespace OakFramework2.Curves.Unity
 
         void Reset()
         {
+            Reset(Vector3.forward, 3, 1.0f);
+        }
+        
+        public void Reset(Vector3 axis, int numPoints, float length)
+        {
+            numPoints = Mathf.Clamp(numPoints, 3, Int32.MaxValue);
+            
             Init();
 
             points.Clear();
-
-            points.Add(Vector3.forward * 3);
-            points.Add(Vector3.forward * 6);
-            points.Add(Vector3.forward * 9);
-
             times.Clear();
-            times.Add(0f);
-            times.Add(0.5f);
-            times.Add(1.0f);
 
-            m_Hermite.InitializeNatural(points.ToArray(), times.ToArray(), 3);
+            var segmentLength = length / (numPoints - 1);
+            var timeIncrement = (1f / (numPoints - 1)); 
+            for (int i = 0; i < numPoints; i++)
+            {
+                var point = i * segmentLength * axis;
+                var time = i * timeIncrement;
+                
+                points.Add(point);
+                times.Add(time);
+            }
+            
+            m_Hermite.InitializeNatural(points.ToArray(), times.ToArray(), numPoints);
 
             inTangents.Clear();
             inTangents.AddRange(m_Hermite.InTangents);
@@ -409,13 +419,13 @@ namespace OakFramework2.Curves.Unity
 
 #if UNITY_EDITOR
 
-        public enum eCurveMode
+        public enum ECurveMode
         {
             PointsAndTangents,
             Times
         }
         
-        public enum eTangentEditMode
+        public enum ETangentEditMode
         {
             free,
             in_out,
@@ -428,14 +438,14 @@ namespace OakFramework2.Curves.Unity
             out_neg_dir_in
         }
 
-        public enum eEditFilter
+        public enum EEditFilter
         {
             selected,
             all
         }
 
         [Flags]
-        public enum eTangentViewOptions
+        public enum ETangentViewOptions
         {
             none =                  0, 
             selectedPoint =         1,
@@ -444,22 +454,33 @@ namespace OakFramework2.Curves.Unity
             always =             selectedPoint | closePoint | selectedCurve
         }
 
-        public enum eTangentFlatteningOptions
+        public enum ETangentFlatteningOptions
         {
             Keep,
             Move,
             Flatten
         }
+        
+        public enum ELockAxisType
+        {
+            None,
+            X,
+            Y,
+            Z
+        }
+        
 
-        public eCurveMode curveMode;
+        public ECurveMode curveMode;
         [FormerlySerializedAs("editMode")] [HideInInspector][SerializeField]
-        public eTangentEditMode tangentEditMode;
+        public ETangentEditMode tangentEditMode;
         [HideInInspector][SerializeField]
-        public eEditFilter editFilter;
+        public EEditFilter editFilter;
         [HideInInspector][SerializeField]
         public int tangentViewOptions;
         [HideInInspector][SerializeField]
-        public eTangentFlatteningOptions tangentFlattenOptions;
+        public ETangentFlatteningOptions tangentFlattenOptions;
+        [HideInInspector][SerializeField]
+        public ELockAxisType lockAxisType;
 
         public bool tangentLengthControlApply = false;
         public float tangentLengthControlLength;
