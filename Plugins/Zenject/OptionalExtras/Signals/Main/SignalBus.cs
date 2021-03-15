@@ -78,10 +78,7 @@ namespace Zenject
 
         private void AbstractFireInternal(Type signalType, object identifier, object signal)
         {
-            // Do this before creating the signal so that it throws if the signal was not declared
             InternalFire(signalType, signal, identifier, true);
-            var declaration = GetDeclaration(new BindingId(signalType, identifier));
-            declaration.Fire(signal);
 
             Type[] interfaces = signalType.GetInterfaces();
             int numOfInterfaces = interfaces.Length;
