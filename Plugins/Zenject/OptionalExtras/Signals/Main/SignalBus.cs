@@ -60,21 +60,36 @@ namespace Zenject
         //Fires Signals with their interfaces
         public void AbstractFire<TSignal>() where TSignal : new() => AbstractFire(new TSignal());
 		public void AbstractFire<TSignal>(TSignal signal) => AbstractFireId(null, signal);
-		public void AbstractFireId<TSignal>(object identifier, TSignal signal)
+
+        public void AbstractFire(object signal)
+        {
+            AbstractFireInternal(signal.GetType(), null, signal);
+        }
+        public void AbstractFireId(object signal, object identifier)
+        {
+            AbstractFireInternal(signal.GetType(), identifier, signal);
+        }
+
+        public void AbstractFireId<TSignal>(object identifier, TSignal signal)
 		{
-			// Do this before creating the signal so that it throws if the signal was not declared
-			Type signalType = typeof(TSignal);
+            Type signalType = typeof(TSignal);
+            AbstractFireInternal(signalType, identifier, signal);
+        }
+
+        private void AbstractFireInternal(Type signalType, object identifier, object signal)
+        {
+            // Do this before creating the signal so that it throws if the signal was not declared
             InternalFire(signalType, signal, identifier, true);
-			var declaration = GetDeclaration(new BindingId(signalType, identifier));
-			declaration.Fire(signal);
+            var declaration = GetDeclaration(new BindingId(signalType, identifier));
+            declaration.Fire(signal);
 
             Type[] interfaces = signalType.GetInterfaces();
             int numOfInterfaces = interfaces.Length;
             for (int i = 0; i < numOfInterfaces; i++)
             {
                 InternalFire(interfaces[i], signal, identifier, true);
-            }
-		}
+            }            
+        }
 
         public void LateDispose()
         {

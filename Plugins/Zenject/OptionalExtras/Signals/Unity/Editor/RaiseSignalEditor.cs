@@ -55,6 +55,14 @@ namespace Plugins.Zenject.OptionalExtras.Signals.Unity.Editor
             if (signalType == null)
                 return;
             
+            var fireAbstractField = typeof(RaiseSignal).GetField("_fireAbstract", BindingFlags.Instance | BindingFlags.NonPublic);
+            var fireAbstractValue = (bool) fireAbstractField.GetValue(raiseSignal);
+            fireAbstractValue = EditorGUILayout.Toggle(
+                new GUIContent("Fire Abstract",
+                    "Fires signal as abstract. Signal needs to be declared with interfaces otherwise exception is thrown."),
+                fireAbstractValue);
+            fireAbstractField.SetValue(raiseSignal, fireAbstractValue);
+            
 #if ODIN_INSPECTOR
 
             var signalFields = signalType.GetFields();

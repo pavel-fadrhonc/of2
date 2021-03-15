@@ -23,7 +23,10 @@ namespace Plugins.Zenject.OptionalExtras.Signals.Unity
         private byte[] _parametersSerializedBA;
 
         [SerializeField]
-        private List<Object> referencedObjects = new List<Object>(); 
+        private List<Object> referencedObjects = new List<Object>();
+
+        [SerializeField] 
+        private bool _fireAbstract;
 
         private Type _signalTypeClass;
         private FieldInfo[] _paramFieldInfos;
@@ -56,7 +59,10 @@ namespace Plugins.Zenject.OptionalExtras.Signals.Unity
                 }
             }
 
-            _signalBus.Fire(signal);
+            if (_fireAbstract)
+                _signalBus.AbstractFire(signal);
+            else
+                _signalBus.Fire(signal);
         }
 
         public void OnBeforeSerialize()
