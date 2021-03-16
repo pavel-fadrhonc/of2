@@ -55,8 +55,7 @@ namespace Zenject
         {
             get { return _subscriptionMap.Count; }
         }
-
-
+        
         //Fires Signals with their interfaces
         public void AbstractFire<TSignal>() where TSignal : new() => AbstractFire(new TSignal());
 		public void AbstractFire<TSignal>(TSignal signal) => AbstractFireId(null, signal);
