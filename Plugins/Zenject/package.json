@@ -1,0 +1,8 @@
+  
+{
+	"name": "com.oakus.extenject",
+	"displayName": "Extenject-of2",
+	"version": "0.0.1",
+	"description": "Dependency Injection Framework for Unity3D, oakus version",
+	"dependencies": {}
+}

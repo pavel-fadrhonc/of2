@@ -8,7 +8,7 @@ namespace Zenject.Tests.Bindings
     {
         static int GlobalInitializeCount;
 
-        public class Foo : IInitializable, ITickable
+        public class Foo : IInitializable
         {
             public bool WasInitialized
             {
@@ -20,17 +20,10 @@ namespace Zenject.Tests.Bindings
                 get; private set;
             }
 
-            public bool WasTicked { get; private set; }
-
             public void Initialize()
             {
                 InitializeCount = ++GlobalInitializeCount;
                 WasInitialized = true;
-            }
-
-            public void Tick()
-            {
-                WasTicked = true;
             }
         }
 
@@ -71,10 +64,6 @@ namespace Zenject.Tests.Bindings
             Assert.That(!facade.Foo.WasInitialized);
             Container.Resolve<InitializableManager>().Initialize();
             Assert.That(facade.Foo.WasInitialized);
-            
-            Assert.That(!facade.Foo.WasTicked);
-            Container.Resolve<TickableManager>().Tick();
-            Assert.That(facade.Foo.WasTicked);
         }
 
         [Test]
