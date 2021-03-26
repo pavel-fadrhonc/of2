@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Scripting;
 using UnityEngine.U2D;
+using Zenject;
 
 namespace of2.AssetManagement
 {
@@ -97,9 +99,13 @@ namespace of2.AssetManagement
         void Destroy();
     }
 
+    [type: Preserve]
     public class AssetManager : IAssetManager
     {
         private Dictionary<string, Object> cachedObjects = new Dictionary<string, Object>();
+            
+        [Inject]
+        public AssetManager(){}            
             
         public void PreloadAsset(string path)
         {
