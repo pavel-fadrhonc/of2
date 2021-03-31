@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ModestTree;
 using ModestTree.Util;
-using Plugins.Zenject.OptionalExtras.ViewMediator;
 using Zenject.Internal;
 #if !NOT_UNITY3D
 using UnityEngine;
@@ -3133,39 +3132,7 @@ namespace Zenject
                     PrefabFactoryPoolable<TParam1, TContract>.PoolFactory>()
                 .FromSubContainerResolve()
                 .ByInstaller<PrefabFactoryPoolable<TParam1, TContract>.PoolInstaller>();             
-        } 
-
-        public void BindViewFactory<TParam1, TView, TPlaceHolderFactory>(TView viewPrefab)
-            where TView : View<TParam1>
-            where TPlaceHolderFactory : PlaceholderFactory<TParam1, PrefabFactorySpawnParams, TView>
-        {
-            BindFactory<TParam1, PrefabFactorySpawnParams, TView, TPlaceHolderFactory>()
-                .FromFactory<ViewFactory<TParam1, TView>>();
-
-            BindInstance(viewPrefab).WhenInjectedInto<ViewFactory<TParam1, TView>>();
-                
-            BindFactory<UnityEngine.Object, 
-                    ViewFactory<TParam1, TView>.Pool,
-                    ViewFactory<TParam1, TView>.PoolFactory>()
-                .FromSubContainerResolve()
-                .ByInstaller<ViewFactory<TParam1, TView>.PoolInstaller>();                
         }
-        
-        public void BindViewFactory<TParam1, TParam2, TView, TPlaceHolderFactory>(TView viewPrefab)
-            where TView : View<TParam1, TParam2>
-            where TPlaceHolderFactory : PlaceholderFactory<TParam1, TParam2, PrefabFactorySpawnParams, TView>
-        {
-            BindFactory<TParam1, TParam2, PrefabFactorySpawnParams, TView, TPlaceHolderFactory>()
-                .FromFactory<ViewFactory<TParam1, TParam2, TView>>();
-
-            BindInstance(viewPrefab).WhenInjectedInto<ViewFactory<TParam1, TParam2, TView>>();
-                
-            BindFactory<UnityEngine.Object, 
-                    ViewFactory<TParam1, TParam2, TView>.Pool,
-                    ViewFactory<TParam1, TParam2, TView>.PoolFactory>()
-                .FromSubContainerResolve()
-                .ByInstaller<ViewFactory<TParam1, TParam2, TView>.PoolInstaller>();                
-        }        
 
         public FactoryToChoiceIdBinder<TParam1, TContract> BindFactoryCustomInterface<TParam1, TContract, TFactoryConcrete, TFactoryContract>()
             where TFactoryConcrete : PlaceholderFactory<TParam1, TContract>, TFactoryContract
