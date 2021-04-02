@@ -22,6 +22,7 @@ namespace Zenject
                 .ToSelf().AsSingle().CopyIntoAllSubContainers();
             
             InvokerInstaller.Install(Container, Container.DefaultParent);
+            CoroutineRunnerInstaller.Install(Container, Container.DefaultParent);
         }
     }
 }

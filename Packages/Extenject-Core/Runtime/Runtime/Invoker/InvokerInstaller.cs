@@ -17,11 +17,6 @@ namespace Zenject
                 .WithGameObjectName("MonoUpdater")
                 .UnderTransform(parent)
                 .AsSingle();
-            Container.Bind<CoroutineRunner>().ToSelf()
-                .FromNewComponentOnNewGameObject()
-                .WithGameObjectName("CoroutineRunner")
-                .UnderTransform(parent)
-                .AsSingle();
         }
     }
 }
