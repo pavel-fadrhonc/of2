@@ -2,9 +2,22 @@ Core version of [Extenject DI framework](https://github.com/svermeulen/Extenject
 Not necessarily up to newest version. I check once in a while and merge if I find it's worth (it's a bit of a hussle cause this package has different structure).
 
 ## My additions
- * PrefabFactoryNameBased [TODO]
- * PrefabFactoryPoolable [TODO]
+<details>
+<summary>Details</summary>
+
+ * PrefabFactoryNameBased [#prefabfactorynamebased]
+ * PrefabFactoryPoolable [#prefabfactorypoolable]
  * [CoroutineRunner] (#coroutinerunner)
+ 
+</details>
+
+## PrefabFactoryNameBased
+ [TODO]
+ 
+ 
+## PrefabFactoryPoolable
+ [TODO]
+
  
 ## CoroutineRunner
 Allows for running coroutines from non-MonoBehaviour classes and some extended functionality over coroutines like Pausing them.
@@ -47,7 +60,7 @@ _runner.PauseCoroutineFor(_coroutine, 1.0f);
 ```
 
 to pause it for given amount of seconds. Subsequent pausing cancels previous pausing. Unpausing cancels pause timer.
-You can resume coroutine with
+You can resume paused coroutine with
 
 ```csharp
 _runner.ResumeCoroutine(_coroutine);
@@ -67,7 +80,7 @@ yield break;
 
 in both cases `ofCoroutine.CoroutineFinished` event is called.
 
-CoroutineRunner uses Extenject [MemoryPools] (https://github.com/svermeulen/Extenject/blob/master/Documentation/MemoryPools.md) to provide `ofCoroutine` wrappers. After coroutine has been stopped the wrapper is returned back to pool to further reuse. Therefore it is possible to keep reference to already stopped coroutine and then manipulate it. That results in `NullReferenceException`. Even worse is the case when the `ofCoroutine` gets returned and then reused again and the same wrapper class is used to manipulate different Unity Coroutine. Therefore it is recommended best practice to always null your reference to the wrapper when coroutine stops.
+CoroutineRunner uses Extenject [MemoryPools] (#https://github.com/svermeulen/Extenject/blob/master/Documentation/MemoryPools.md) to provide `ofCoroutine` wrappers. After coroutine has been stopped the wrapper is returned back to pool to further reuse. Therefore it is possible to keep reference to already stopped coroutine and then manipulate it. That results in `NullReferenceException`. Even worse is the case when the `ofCoroutine` gets returned and then reused again and the same wrapper class is used to manipulate different Unity Coroutine. Therefore it is recommended best practice to always null your reference to the wrapper when coroutine stops.
 
 ```csharp
 ...
