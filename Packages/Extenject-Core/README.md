@@ -13,10 +13,115 @@ Not necessarily up to newest version. I check once in a while and merge if I fin
 
 ## PrefabFactoryNameBased
  [TODO]
- 
+
+Special kind of factory that allows for dynamic instantiation and pooling of prefabs with GameObject context and MonoBehaviour Facade class.
+Read about Extenject [Factories](https://github.com/svermeulen/Extenject/blob/master/Documentation/Factories.md) and [Subcontainers](#https://github.com/svermeulen/Extenject/blob/master/Documentation/SubContainers.md) first.
+
+In original Extenject there is a an option for [PrefabFactory](#https://github.com/svermeulen/Extenject/blob/master/Documentation/Factories.md#prefab-factory) that allows for dynamic spawning of prefabs that are passed during runtime. However there is no option for making those prefabs poolable so the instances can be reused. PrefabFactoryNameBased attempts to fill this gap.
+
+Basic use case is that you have a prefab that has to have a MonoBehaviour on it that implements `IPoolable<IMemoryPool>` and `IDisposable`.
+```csharp
+public class FooFacade : MonoBehaviour, IPoolable<IMemoryPool>, IDisposable
+{
+	private IMemoryPool _pool;
+
+	public void OnDespawned()
+	{
+		_pool = null;
+	}
+
+	public void OnSpawned(IMemoryPool pool)
+	{
+		_pool = pool;
+	}
+
+	public void Dispose()
+	{
+		_pool?.Despawn(this);
+	}
+}
+```
+
+This prefab doesn't has to have GameObjectContext on it but if it does, it can elegantly act as a Facade class that wraps the prefab into its own Context where all binding all local (although the ones from parent containers are still inherited). It can also inform all interested parties (local classes) about spawning and despawning so they can set their state appropriatelly.
+
+The affix **NameBased** refers to the fact that prefabs will be pooled based on the **name of the prefab**. That allows for different prefabs to have the same Facade class but still be treated as different objects.
+
+There are convenience methods added into `DiContainer` to easily declare your `PrefabFactoryNameBased`.
+```csharp
+public void BindNameBasedPoolablePrefabFactory<TContract, TPlaceHolderFactory>()
+            where TContract : Component, IPoolable<IMemoryPool>, IPoolable
+            where TPlaceHolderFactory : PlaceholderFactory<UnityEngine.Object, PrefabFactorySpawnParams, TContract>
+```
+where `TContract` is you Facade class and TPlaceHolderFactory is the placeholder factory that you use to spawn prefab instances.
+
+It expects at least prefab gameobject and `PrefabFactorySpawnParams` class. This class allows to setup prefab `position, rotation, scale` and `parent` **before** the Facade OnSpawned gets called. That is because lot of times, the initialization might rely on prefab being certain size, on certain position or at certain point in hierachy, so setting this after calling `factory.Create()` is too late. If, however, you dont need this, you can pass null without worries.
+
+There are other versions with an option to pass arguments into your facade `OnSpawned` method. 
+```csharp
+public void BindPoolablePrefabFactory<TParam1, TContract, TPlaceHolderFactory>()
+	where TContract : Component, IPoolable<TParam1, IMemoryPool> 
+	where TPlaceHolderFactory : PlaceholderFactory<TParam1, PrefabFactorySpawnParams, TContract>
+```
+there are versions with up to 4 parameters.
+
+Your Facede class then becomes, for example
+
+```csharp
+public class FooFacade : MonoBehaviour, IPoolable<float, int, string, IMemoryPool>, IDisposable
+{
+	private IMemoryPool _pool;
+	
+	private float _f;
+	private int _i;
+	private string _s;
+
+	public void OnDespawned()
+	{
+		_pool = null;
+	}
+
+	public void OnSpawned(float f, int i, string s, IMemoryPool pool)
+	{
+		_f = f;
+		_i = i;
+		_s = s;
+		_pool = pool;
+	}
+
+	public void Dispose()
+	{
+		_pool?.Despawn(this);
+	}
+}
+```
+
+when you no longer need to prefab instance, you just call `fooFacade.Dispose`.
+
+So to wrap this up, in order to use this, you need
+1. Prefab
+2. Facade class (MonoBehaviour)
+3. Factory class (recommended to be nested class of Facade class as per [Extenject best practices](#https://github.com/svermeulen/Extenject/blob/master/Documentation/Factories.md#example))
+4. Instantiate the prefab by injecting the factory and calling `Create`, passing the prefab and optionally PrefabFactorySpawnParams and/or parameters
+5. Profit
+6. When profit no longer yields, call `FacadeClass.Dispose()` to free instance for further use.
+
  
 ## PrefabFactoryPoolable
- [TODO]
+ This class is the same as `PrefabFactoryNameBased` except there is no need to pass the prefab dynamically when calling create but rather `IPrefaFactoryPooledPrefabResolver` 
+ class is injected in installer when binding the factory which will determine the prefab based on the TParam passed in Create. That and also I made version for just 1 parameter so far cause that's as much as I needed at the time.
+ 
+ the Binding parameters are the same except you use `DiContainer.BindPoolablePrefabFactory<TParam1, TContract, TPlaceHolderFactory>()` method.
+ Then you need to bind `IPrefaFactoryPooledPrefabResolver` yourself. The interface looks like this
+ 
+```csharp
+public interface IPrefaFactoryPooledPrefabResolver
+{
+	TContract ResolvePrefab(TParam param);
+}
+```
+
+therefore the class needs to accept parameter of the prefab facade class and based on that decide which prefab to return and instantiate.
+Internally, it still pools the prefab based on name of the prefab, so you can have more prefabs with same facade and parameter but different prefabs.
 
  
 ## CoroutineRunner
@@ -80,7 +185,7 @@ yield break;
 
 in both cases `ofCoroutine.CoroutineFinished` event is called.
 
-CoroutineRunner uses Extenject [MemoryPools] (#https://github.com/svermeulen/Extenject/blob/master/Documentation/MemoryPools.md) to provide `ofCoroutine` wrappers. After coroutine has been stopped the wrapper is returned back to pool to further reuse. Therefore it is possible to keep reference to already stopped coroutine and then manipulate it. That results in `NullReferenceException`. Even worse is the case when the `ofCoroutine` gets returned and then reused again and the same wrapper class is used to manipulate different Unity Coroutine. Therefore it is recommended best practice to always null your reference to the wrapper when coroutine stops.
+CoroutineRunner uses Extenject [MemoryPools](#https://github.com/svermeulen/Extenject/blob/master/Documentation/MemoryPools.md) to provide `ofCoroutine` wrappers. After coroutine has been stopped the wrapper is returned back to pool to further reuse. Therefore it is possible to keep reference to already stopped coroutine and then manipulate it. That results in `NullReferenceException`. Even worse is the case when the `ofCoroutine` gets returned and then reused again and the same wrapper class is used to manipulate different Unity Coroutine. Therefore it is recommended best practice to always null your reference to the wrapper when coroutine stops.
 
 ```csharp
 ...

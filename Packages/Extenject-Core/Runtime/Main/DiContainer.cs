@@ -3031,7 +3031,7 @@ namespace Zenject
         }
         
         public void BindNameBasedPoolablePrefabFactory<TContract, TPlaceHolderFactory>()
-            where TContract : Component, IPoolable<IMemoryPool> 
+            where TContract : Component, IPoolable<IMemoryPool>, IDisposable
             where TPlaceHolderFactory : PlaceholderFactory<UnityEngine.Object, PrefabFactorySpawnParams, TContract>
         {
             BindFactory<UnityEngine.Object, PrefabFactorySpawnParams, TContract, TPlaceHolderFactory>()
@@ -3045,7 +3045,7 @@ namespace Zenject
         }
         
         public void BindNameBasedPoolablePrefabFactory<TParam1, TContract, TPlaceHolderFactory>()
-            where TContract : Component, IPoolable<TParam1, IMemoryPool> 
+            where TContract : Component, IPoolable<TParam1, IMemoryPool>, IDisposable
             where TPlaceHolderFactory : PlaceholderFactory<UnityEngine.Object, TParam1, PrefabFactorySpawnParams, TContract>
         {
             BindFactory<UnityEngine.Object, TParam1, PrefabFactorySpawnParams, TContract, TPlaceHolderFactory>()
@@ -3059,7 +3059,7 @@ namespace Zenject
         } 
         
         public void BindNameBasedPoolablePrefabFactory<TParam1, TParam2, TContract, TPlaceHolderFactory>()
-            where TContract : Component, IPoolable<TParam1, TParam2, IMemoryPool> 
+            where TContract : Component, IPoolable<TParam1, TParam2, IMemoryPool>, IDisposable
             where TPlaceHolderFactory : PlaceholderFactory<UnityEngine.Object, TParam1, TParam2, PrefabFactorySpawnParams, TContract>
         {
             BindFactory<UnityEngine.Object, TParam1, TParam2, PrefabFactorySpawnParams, TContract, TPlaceHolderFactory>()
@@ -3073,7 +3073,7 @@ namespace Zenject
         }    
         
         public void BindNameBasedPoolablePrefabFactory<TParam1, TParam2, TParam3, TContract, TPlaceHolderFactory>()
-            where TContract : Component, IPoolable<TParam1, TParam2, TParam3, IMemoryPool> 
+            where TContract : Component, IPoolable<TParam1, TParam2, TParam3, IMemoryPool>, IDisposable
             where TPlaceHolderFactory : PlaceholderFactory<UnityEngine.Object, TParam1, TParam2, TParam3, PrefabFactorySpawnParams, TContract>
         {
             BindFactory<UnityEngine.Object, TParam1, TParam2, TParam3, PrefabFactorySpawnParams, TContract, TPlaceHolderFactory>()
@@ -3087,7 +3087,7 @@ namespace Zenject
         }      
         
         public void BindNameBasedPoolablePrefabFactory<TParam1, TParam2, TParam3, TParam4, TContract, TPlaceHolderFactory>()
-            where TContract : Component, IPoolable<TParam1, TParam2, TParam3, TParam4, IMemoryPool> 
+            where TContract : Component, IPoolable<TParam1, TParam2, TParam3, TParam4, IMemoryPool>, IDisposable 
             where TPlaceHolderFactory : PlaceholderFactory<UnityEngine.Object, TParam1, TParam2, TParam3, TParam4, PrefabFactorySpawnParams, TContract>
         {
             BindFactory<UnityEngine.Object, TParam1, TParam2, TParam3, TParam4, PrefabFactorySpawnParams, TContract, TPlaceHolderFactory>()
@@ -3104,7 +3104,7 @@ namespace Zenject
         /// Make sure you also bind PrefabFactoryPoolable<TContract>.IPrefaFactoryPooledPrefabResolver outside of this.
         /// </summary>
         public void BindPoolablePrefabFactory<TContract, TPlaceHolderFactory>()
-            where TContract : Component, IPoolable<IMemoryPool> 
+            where TContract : Component, IPoolable<IMemoryPool>, IDisposable
             where TPlaceHolderFactory : PlaceholderFactory<PrefabFactorySpawnParams, TContract>
         {
             BindFactory<PrefabFactorySpawnParams, TContract, TPlaceHolderFactory>()
@@ -3121,7 +3121,7 @@ namespace Zenject
         /// Make sure you also bind PrefabFactoryPoolable<TParam1, TContract>.IPrefaFactoryPooledPrefabResolver outside of this.
         /// </summary>
         public void BindPoolablePrefabFactory<TParam1, TContract, TPlaceHolderFactory>()
-            where TContract : Component, IPoolable<TParam1, IMemoryPool> 
+            where TContract : Component, IPoolable<TParam1, IMemoryPool>, IDisposable
             where TPlaceHolderFactory : PlaceholderFactory<TParam1, PrefabFactorySpawnParams, TContract>
         {
             BindFactory<TParam1, PrefabFactorySpawnParams, TContract, TPlaceHolderFactory>()
