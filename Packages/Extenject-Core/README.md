@@ -12,10 +12,8 @@ Not necessarily up to newest version. I check once in a while and merge if I fin
 </details>
 
 ## PrefabFactoryNameBased
- [TODO]
-
 Special kind of factory that allows for dynamic instantiation and pooling of prefabs with GameObject context and MonoBehaviour Facade class.
-Read about Extenject [Factories](https://github.com/svermeulen/Extenject/blob/master/Documentation/Factories.md) and [Subcontainers](#https://github.com/svermeulen/Extenject/blob/master/Documentation/SubContainers.md) first.
+Read about Extenject [Factories](https://github.com/svermeulen/Extenject/blob/master/Documentation/Factories.md) and [Subcontainers](https://github.com/svermeulen/Extenject/blob/master/Documentation/SubContainers.md) first.
 
 In original Extenject there is a an option for [PrefabFactory](#https://github.com/svermeulen/Extenject/blob/master/Documentation/Factories.md#prefab-factory) that allows for dynamic spawning of prefabs that are passed during runtime. However there is no option for making those prefabs poolable so the instances can be reused. PrefabFactoryNameBased attempts to fill this gap.
 
@@ -189,12 +187,41 @@ CoroutineRunner uses Extenject [MemoryPools](#https://github.com/svermeulen/Exte
 
 ```csharp
 ...
-	public void Initialize()
-	{
-		_coroutine = _runner.RunCoroutine(DoSomething());
-		_coroutine.CoroutineFinished += () => {_coroutine = null;};
-	}
+public void Initialize()
+{
+	_coroutine = _runner.RunCoroutine(DoSomething());
+	_coroutine.CoroutineFinished += () => {_coroutine = null;};
+}
 ...
 ```
 
 Alternatively, you can use `ofCoroutine.IsValid` property but the problem of that is that it gets reseted when it is reused as new instance.
+
+## Invoker
+Similar to CoroutineRunner, Invoker is aimed to extend functionality provided by MonoBehaviour.Invoke()
+
+Just inject IInvoker and use methods from this interface
+
+Invoker operates on similar "interface" as MB.Invoke() and works with ids that identify running tasks.
+
+These tasks can be invoked
+
+`int Invoke(InvokerTask task_, float delay_, bool ignorePause)`
+`int InvokeRepeating(InvokerTask task_, float delay_, float interval_, float cancelTime = 0, bool ignoreWorldPause = false)`
+
+stopped
+
+`void StopInvoke(int taskId, float delay)`
+
+querried
+
+`bool HasTask(int taskId)`
+
+paused and resumed
+
+`void Pause(int taskId)`
+`void PauseFor(int taskId, float time)`
+`bool IsPaused(int taskId)`
+`void Resume(int taskId)`
+
+aside from that WorlInvoker, which is default implementation of IInvoker also implements `IPausable` which is an easy way to pause the game without manipulating Unity.timescale (so unity running systems can still run if you want, like animations etc.). The `ingoreWorldPause` argument of `Invoke` methods is aimed at this pause and makes the task ingore it. All tasks, regardless of what `ignoreWorldPause` were they ran with, can be paused and resumed individually via dedicated methods.

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using Zenject;
 
@@ -19,12 +20,12 @@ namespace Zenject
     }
  
     /// <summary>
-    /// Same as ManualInvoker except update method is called automatically from Unity Update method
+    /// Wrapper over Manual invoker that allows for setting ignore pause for tasks.
     /// </summary>
     public class WorldInvoker : IInvoker, IInitializable, IPausable
     {
         private List<ManualInvoker.InvokerTaskInfo> ignorePauseTasks = new List<ManualInvoker.InvokerTaskInfo>();
-        private List<int> removedTasks = new List<int>();
+        private List<int> removedTasks = new List<int>(); // contains indices into ignorePauseTasks
         
         private readonly MonoUpdater monoUpdater;
         private readonly ManualInvoker manualInvoker;
@@ -48,6 +49,15 @@ namespace Zenject
         {
             foreach (var ignorePauseTask in ignorePauseTasks)
             {
+                if (ignorePauseTask.paused && ignorePauseTask.unpauseTime > 0 && Time.time > ignorePauseTask.unpauseTime)
+                {
+                    ignorePauseTask.paused = false;
+                    ignorePauseTask.unpauseTime = 0;
+                }
+                
+                if (ignorePauseTask.paused)
+                    continue;
+                
                 var remove = manualInvoker.UpdateTask(ignorePauseTask, dt);
                 if (removedTasks.Count == 0)
                     removedTasks.Clear();
@@ -70,44 +80,130 @@ namespace Zenject
                 manualInvoker.Update(dt);
         }
 
-        public void InvokeRepeating(InvokerTask task_, float delay_, float interval_, float cancelTime = 0, bool ignorePause = false)
+        public int InvokeRepeating(InvokerTask task_, float delay_, float interval_, float cancelTime = 0, bool ignoreWorldPause = false)
         {
-            if (ignorePause)
+            int taskId = 0;
+            
+            if (ignoreWorldPause)
             {
                 var task = manualInvoker.BorrowTask(task_, delay_, interval_, cancelTime);
+                taskId = task.id;
                 ignorePauseTasks.Add(task);
             }
             else
             {
-                manualInvoker.InvokeRepeating(task_, delay_, interval_, cancelTime);
+                taskId = manualInvoker.InvokeRepeating(task_, delay_, interval_, cancelTime);
             }
+
+            return taskId;
         }
 
-        public void Invoke(InvokerTask task_, float delay_, bool ignorePause)
+        public int Invoke(InvokerTask task_, float delay_, bool ignorePause)
         {
+            int taskId = 0;
+            
             if (ignorePause)
             {
                 var task = manualInvoker.BorrowTask(task_, delay_, 0, delay_);
+                taskId = task.id;
                 ignorePauseTasks.Add(task);
             }
             else
             {
-                manualInvoker.Invoke(task_, delay_);
+                taskId = manualInvoker.Invoke(task_, delay_);
             }
+
+            return taskId;
         }
 
-        public void StopInvoke(InvokerTask task, float delay)
+        public void StopInvoke(int taskId, float delay)
         {
-            manualInvoker.StopInvoke(task, 0);
+            manualInvoker.StopInvoke(taskId, 0);
             for (var index = 0; index < ignorePauseTasks.Count; index++)
             {
                 var ignorePauseTask = ignorePauseTasks[index];
-                if (ignorePauseTask.Task == task)
+                if (ignorePauseTask.id == taskId)
                 {
                     ignorePauseTasks.RemoveAt(index);
                     break;
                 }
             }
+        }
+
+        public bool HasTask(int taskId)
+        {
+            var ignoreTask = FindIgnoreTaskById(taskId);
+            if (ignoreTask != null)
+                return true;
+
+            return manualInvoker.HasTask(taskId);
+        }
+
+        public void Pause(int taskId)
+        {
+            var ignoreTask = FindIgnoreTaskById(taskId);
+            if (ignoreTask != null)
+            {
+                ignoreTask.paused = true;
+                ignoreTask.unpauseTime = 0;
+            }
+            else
+            {
+                manualInvoker.Pause(taskId);   
+            }
+        }
+
+        public void PauseFor(int taskId, float time)
+        {
+            var ignoreTask = FindIgnoreTaskById(taskId);
+            if (ignoreTask != null)
+            {
+                ignoreTask.paused = true;
+                ignoreTask.unpauseTime = time > 0f ? Time.time + time : 0f;
+            }
+            else
+            {
+                manualInvoker.PauseFor(taskId, time);   
+            }            
+        }
+
+        public bool IsPaused(int taskId)
+        {
+            var pausedTask = FindIgnoreTaskById(taskId);
+            if (pausedTask != null)
+            {
+                return pausedTask.paused;
+            }
+
+            return manualInvoker.IsPaused(taskId);
+        }
+
+        public void Resume(int taskId)
+        {
+            var ignoreTask = FindIgnoreTaskById(taskId);
+            if (ignoreTask != null)
+            {
+                ignoreTask.paused = false;
+                ignoreTask.unpauseTime = 0;
+            }
+            else
+            {
+                manualInvoker.Resume(taskId);   
+            }              
+        }
+
+        private ManualInvoker.InvokerTaskInfo FindIgnoreTaskById(int taskId)
+        {
+            for (var index = 0; index < ignorePauseTasks.Count; index++)
+            {
+                var ignorePauseTask = ignorePauseTasks[index];
+                if (ignorePauseTask.id == taskId)
+                {
+                    return ignorePauseTask;
+                }
+            }
+
+            return null;
         }
     }
 }

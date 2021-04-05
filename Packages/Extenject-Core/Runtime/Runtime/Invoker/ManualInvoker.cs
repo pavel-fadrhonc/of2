@@ -1,7 +1,7 @@
 ﻿//  <author>Pavel Fadrhonc</author>
 //  <email>pavel.fadrhonc@gmail.com</email>
 //  <summary> Allows to InvokeOnce or InvokeRepeating methods that are not part of MonoBehaviours.
-// You have to call Update method yourself with delta time allowing for more control that WorldInvoker.</summary>
+// You have to call Update method yourself with delta time allowing for more control than WorldInvoker.</summary>
 
 using System;
 using System.Collections.Generic;
@@ -14,6 +14,9 @@ namespace Zenject
     {
         public class InvokerTaskInfo
         {
+            private static int _lastTaskId = 0;
+            
+            public int id;
             public InvokerTask Task;
             public float Delay;
             public float Interval;
@@ -23,6 +26,8 @@ namespace Zenject
             public bool started;
             public float cancelTime;
             public bool active;
+            public bool paused;
+            public float unpauseTime;
 
             public InvokerTaskInfo()
             {
@@ -31,6 +36,7 @@ namespace Zenject
 
             public void Reset()
             {
+                id = _lastTaskId++;
                 Task = null;
                 Delay = 0;
                 Interval = 0;
@@ -69,23 +75,23 @@ namespace Zenject
             }
         }
 
-        private List<InvokerTaskInfo> _tasks = new List<InvokerTaskInfo>();
+        //private List<InvokerTaskInfo> _tasks = new List<InvokerTaskInfo>();
+        private Dictionary<int, InvokerTaskInfo> _tasksById = new Dictionary<int, InvokerTaskInfo>();
         private InvokeTasksCache _tasksCache = new InvokeTasksCache();
-        private List<InvokerTaskInfo> _removedTasks = new List<InvokerTaskInfo>();
+        private List<int> _removedTasks = new List<int>();
 
         public void Update(float dt)
         {
             _removedTasks.Clear();
 
-            for (int index = 0; index < _tasks.Count; index++)
+            foreach (var invokerTaskInfoPair in _tasksById)
             {
-                var invokeTask = _tasks[index];
-                
+                var invokeTaskId = invokerTaskInfoPair.Key;
 
-                if (UpdateTask(invokeTask, dt))
-                    _removedTasks.Add(invokeTask);
+                if (UpdateTask(invokeTaskId, dt))
+                    _removedTasks.Add(invokeTaskId);                
             }
-
+            
             // removing has to be at the end for Invoke to work properly
             for (int index = 0; index < _removedTasks.Count; index++)
             {
@@ -96,10 +102,17 @@ namespace Zenject
 
         #region PUBLIC METHODS
 
+        public bool UpdateTask(int taskId, float dt)
+        {
+            var invokerTaskInfo = _tasksById[taskId];
+
+            return UpdateTask(invokerTaskInfo, dt);
+        }
+        
         public bool UpdateTask(InvokerTaskInfo invokerTaskInfo, float dt)
         {
             bool removed = false;
-            
+
             invokerTaskInfo.TotalRunTime += dt;
             
             if (!invokerTaskInfo.started)
@@ -107,7 +120,7 @@ namespace Zenject
                 if (invokerTaskInfo.TotalRunTime >= invokerTaskInfo.Delay)
                 {
                     invokerTaskInfo.started = true;
-                    invokerTaskInfo.Task(invokerTaskInfo.TotalRunTime - invokerTaskInfo.Delay);
+                    RunTask(invokerTaskInfo);
                     invokerTaskInfo.TotalRunTime -= invokerTaskInfo.Delay;
                     invokerTaskInfo.LastInvokeTime = invokerTaskInfo.TotalRunTime;
                     invokerTaskInfo.NextInvokeTime = invokerTaskInfo.Interval;
@@ -117,7 +130,7 @@ namespace Zenject
             {
                 if (invokerTaskInfo.TotalRunTime > invokerTaskInfo.NextInvokeTime)
                 {
-                    invokerTaskInfo.Task(invokerTaskInfo.TotalRunTime - invokerTaskInfo.LastInvokeTime);
+                    RunTask(invokerTaskInfo);
                     invokerTaskInfo.LastInvokeTime = invokerTaskInfo.TotalRunTime;
                     invokerTaskInfo.NextInvokeTime += invokerTaskInfo.Interval;
                 }
@@ -128,7 +141,7 @@ namespace Zenject
                 removed = true;
 
             return removed;
-        }
+        }        
 
         public InvokerTaskInfo BorrowTask()
         {
@@ -136,7 +149,7 @@ namespace Zenject
         }
         
         /// <summary>
-        /// You can borrow task here and the use this class UpdateTask function to update it with dt.
+        /// You can borrow task here and then use this class UpdateTask function to update it with dt.
         /// This class won't be part of tasks that belong to this class so you can still update the whole class using Update
         /// </summary>
         public InvokerTaskInfo BorrowTask(InvokerTask task_, float delay_, float interval_, float cancelTime = 0)
@@ -149,48 +162,99 @@ namespace Zenject
             invokeTask.cancelTime = cancelTime;
 
             return invokeTask;
-        }        
-
-        public void ReturnTask(InvokerTaskInfo taskInfo)
-        {
-            StopTask(taskInfo);
         }
 
-        public void InvokeRepeating(InvokerTask task_, float delay_, float interval_, float cancelTime = 0)
+        public int InvokeRepeating(InvokerTask task_, float delay_, float interval_, float cancelTime = 0)
         {
-            _tasks.Add(BorrowTask(task_, delay_, interval_, cancelTime));
+            var task = BorrowTask(task_, delay_, interval_, cancelTime);
+            _tasksById.Add(task.id, task);
+
+            return task.id;
         }
 
         /// <summary>
         /// Invokes just once
         /// </summary>
-        public void Invoke(InvokerTask task_, float delay_)
+        public int Invoke(InvokerTask task_, float delay_)
         {
             // using cancelTime = delay can work because record are remove at the end of Update loop
-            InvokeRepeating(task_, delay_, 0, delay_);
+            return InvokeRepeating(task_, delay_, 0, delay_);
         }
 
         /// <summary>
         /// Wont break if task is not actually Invoking
         /// </summary>
-        public void StopInvoke(InvokerTask task, float delay)
+        public void StopInvoke(int taskId, float delay)
         {
-            var invTask = _tasks.Find(t => t.Task == task);
-            if (invTask == null) return;
+            if (!_tasksById.ContainsKey(taskId)) return;
             if (delay == 0)
-                StopTask(invTask);
+                StopTask(taskId);
             else
-                invTask.cancelTime = invTask.TotalRunTime + delay;
+                _tasksById[taskId].cancelTime = _tasksById[taskId].TotalRunTime + delay;
+        }
+
+        public bool HasTask(int taskId)
+        {
+            return _tasksById.ContainsKey(taskId);
+        }
+
+        public void Pause(int taskId)
+        {
+            Pause(taskId, 0f);
+        }
+        
+        public void PauseFor(int taskId, float time)
+        {
+            Pause(taskId, time);
+        }
+
+        public bool IsPaused(int taskId)
+        {
+            if (!_tasksById.ContainsKey(taskId)) return false;
+
+            return _tasksById[taskId].paused;
+        }
+        
+        public void Resume(int taskId)
+        {
+            if (!_tasksById.ContainsKey(taskId)) return;
+            
+            _tasksById[taskId].paused = false;
+            _tasksById[taskId].unpauseTime = 0;
         }
 
         #endregion
 
         #region PRIVATE / PROTECTED METHODS
 
-        private void StopTask(InvokerTaskInfo taskInfo)
+        private void Pause(int taskId, float time = 0)
         {
-            _tasks.Remove(taskInfo);
-            _tasksCache.StopTask(taskInfo);        
+            if (!_tasksById.ContainsKey(taskId)) return;
+
+            _tasksById[taskId].paused = true;
+
+            if (time > 0f)
+                _tasksById[taskId].unpauseTime = Time.time + time;
+        }
+
+        private void RunTask(InvokerTaskInfo taskInfo)
+        {
+            if (taskInfo.paused && taskInfo.unpauseTime > 0f && Time.time > taskInfo.unpauseTime)
+            {
+                taskInfo.paused = false;
+                taskInfo.unpauseTime = 0;
+            }
+
+            if (taskInfo.paused)
+                return;
+            
+            taskInfo.Task(taskInfo.TotalRunTime - taskInfo.LastInvokeTime);
+        }
+        
+        private void StopTask(int taskId)
+        {
+            //_tasks.Remove(taskInfo);
+            _tasksCache.StopTask(_tasksById[taskId]);        
         }
 
         #endregion
