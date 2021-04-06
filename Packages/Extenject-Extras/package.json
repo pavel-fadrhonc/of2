@@ -8,7 +8,7 @@
     "dependency injection",
     "unity"
   ],
-	"category": "Unity"
+	"category": "Unity",
 	
 	"dependencies": {
 		"com.oakus.frameworks.of2.extenject-core":"https://github.com/pavel-fadrhonc/of2.git?path=/Packages/Extenject-Core#v2.1"
