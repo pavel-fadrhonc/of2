@@ -1,0 +1,10 @@
+{
+  "name": "com.oakus.frameworks.of2.utils",
+  "displayName": "of2 utils",
+  "version": "1.0.0",
+  "unity": "2020.3",
+  "description": "Various utilities used in and outside of of2 framework",
+  "category": "Unity"
+	
+	
+}
