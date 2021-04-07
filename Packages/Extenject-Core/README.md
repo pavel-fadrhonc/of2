@@ -229,3 +229,14 @@ paused and resumed
 `void Resume(int taskId)`
 
 aside from that WorlInvoker, which is default implementation of IInvoker also implements `IPausable` which is an easy way to pause the game without manipulating Unity.timescale (so unity running systems can still run if you want, like animations etc.). The `ingoreWorldPause` argument of `Invoke` methods is aimed at this pause and makes the task ingore it. All tasks, regardless of what `ignoreWorldPause` were they ran with, can be paused and resumed individually via dedicated methods.
+
+## LateInitializer
+Came from a fact that in Extenject, when there is a Context hierarchy, the nested Contexts are evaluated first before the upper ones do. This means, if there is some class that is initializing / fetching / preparing some data on a top level, the classes created in child Context cannot effectively use that class in Initialize because it is called **before** the parent Context Initialize. In this case, the execution order setting via `Container.BindExecutionOrder()` does not work, because it only works in space of single Context. For this purpose, I created **LateInitializer**.
+
+Use it exactly as initialize, i.e. implement **ILateInitializable** interface and provide **LateInitialize** method.
+
+However, in order to solve the problem stated above, i.e. to make sure that all `LateInitialize` are called after all `Initialize` the way this is implemented is that the call for `LateInitialize` is one frame delayed. This is usually fine but in case you are pausing the game via setting Unity timescale to 0 in Initialize/Start for some reason (like waiting for Addressables to load or some asynchronous operation to finish) this might cause issues.
+
+Also, in a same way as `Initialize`, classes spawned via factories (except those that are on GameObject with GameObjectContext or MonoKernel derived script) do **not** have their `Initialize/LateInitialize` called automatically by the Manager but you need to call them yourself.
+
+
