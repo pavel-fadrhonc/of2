@@ -13,6 +13,6 @@
 		"com.oakus.frameworks.of2.pool":"https://github.com/pavel-fadrhonc/of2.git?path=/Packages/Pool#2.1.0",
 		"com.oakus.frameworks.of2.d":"https://github.com/pavel-fadrhonc/of2.git?path=/Packages/DebugLog#2.1.0",
 		"com.oakus.frameworks.of2.utils":"https://github.com/pavel-fadrhonc/of2.git?path=/Packages/Utils#2.1.0",
-		"com.oakus.frameworks.of2.ClassExtensions":"https://github.com/pavel-fadrhonc/of2.git?path=/Packages/ClassExtensions#2.1.0"
+		"com.oakus.frameworks.of2.classextensions":"https://github.com/pavel-fadrhonc/of2.git?path=/Packages/ClassExtensions#2.1.0"
 	}
 }
