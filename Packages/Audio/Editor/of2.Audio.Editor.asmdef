@@ -1,0 +1,22 @@
+{
+    "name": "of2.Audio.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:d4e3e3b3d0ee4784e90637e8ec22ae40",
+        "GUID:dda45e0c61c15ff488af42529ccf35a3",
+        "GUID:9b2c24e170966eb46b1b024237dd0e51",
+        "GUID:8f7b33338fec16140b1c041c951a378a",
+        "GUID:ebe37fe3f3345ff4fae804697d489325"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

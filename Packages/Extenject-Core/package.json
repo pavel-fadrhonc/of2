@@ -1,6 +1,6 @@
 {
   "name": "com.oakus.frameworks.of2.extenject-core",
-  "displayName": "Extenject-Core, of2 version",
+  "displayName": "of2 Extenject-Core",
   "version": "2.1.0",
   "unity": "2020.3",
   "description": "Core scripts for Extenject framework modified by oakus",
