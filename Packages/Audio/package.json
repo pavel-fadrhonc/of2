@@ -8,6 +8,7 @@
 	
 	"gitDependencies": {
 		"com.oakus.frameworks.of2.extenject-core":"https://github.com/pavel-fadrhonc/of2.git?path=/Packages/Extenject-Core#2.1.0",
+		"com.oakus.frameworks.of2.extenject-extras":"https://github.com/pavel-fadrhonc/of2.git?path=/Packages/Extenject-Extras#2.1.0",
 		"com.oakus.frameworks.of2.assetmanagement":"https://github.com/pavel-fadrhonc/of2.git?path=/Packages/AssetManagement#2.1.0",
 		"com.oakus.frameworks.of2.basemono":"https://github.com/pavel-fadrhonc/of2.git?path=/Packages/BaseMono#2.1.0",
 		"com.oakus.frameworks.of2.pool":"https://github.com/pavel-fadrhonc/of2.git?path=/Packages/Pool#2.1.0",
