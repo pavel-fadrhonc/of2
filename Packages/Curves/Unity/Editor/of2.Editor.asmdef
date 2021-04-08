@@ -1,8 +1,8 @@
 {
     "name": "OakFramework2.Editor",
+    "rootNamespace": "",
     "references": [
         "GUID:478a2357cc57436488a56e564b08d223",
-        "GUID:601ff19678d7b644087ec82a4923cc17",
         "GUID:33305aae766b49443a1c80d6f76778da",
         "GUID:f1687668558c67d4fb125036d898193f"
     ],
