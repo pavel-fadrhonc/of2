@@ -1,0 +1,17 @@
+{
+    "name": "of2.DebugTools",
+    "rootNamespace": "",
+    "references": [
+        "GUID:5a47ddb90df5df94884a08e2d9a36e78",
+        "GUID:d8b63aba1907145bea998dd612889d6b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
