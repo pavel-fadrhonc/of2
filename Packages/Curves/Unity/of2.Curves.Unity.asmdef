@@ -1,0 +1,15 @@
+{
+    "name": "of2.Curves.Unity",
+    "references": [
+        "GUID:f1687668558c67d4fb125036d898193f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

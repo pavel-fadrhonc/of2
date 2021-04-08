@@ -1,0 +1,16 @@
+{
+  "name": "com.oakus.frameworks.of2.curves",
+  "displayName": "of2 Curves",
+  "version": "2.1.0",
+  "unity": "2020.3",
+  "description": "Tool for making hermite curves.",
+	"category": "Unity",
+	
+	"dependencies": { "com.unity.editorcoroutines": "1.0.0" },
+	
+	"gitDependencies": {
+		"com.oakus.frameworks.of2.math":"https://github.com/pavel-fadrhonc/of2.git?path=/Packages/Math#2.1.0"
+	}
+
+
+}
