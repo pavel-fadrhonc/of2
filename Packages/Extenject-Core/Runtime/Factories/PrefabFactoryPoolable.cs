@@ -66,8 +66,11 @@ namespace Zenject
                 item.OnDespawned();
             }
         }
-        
-        public class PoolFactory : PlaceholderFactory<UnityEngine.Object, Pool> {}
+
+        public class PoolFactory : PlaceholderFactory<UnityEngine.Object, Pool>
+        {
+            [Inject] public PoolFactory() {}
+        }
 
         public class PoolInstaller : Installer<PoolInstaller>
         {
@@ -141,8 +144,11 @@ namespace Zenject
                 item.OnDespawned();
             }
         }
-        
-        public class PoolFactory : PlaceholderFactory<UnityEngine.Object, Pool> {}
+
+        public class PoolFactory : PlaceholderFactory<UnityEngine.Object, Pool>
+        {
+            [Inject] public PoolFactory() {}
+        }
 
         public class PoolInstaller : Installer<PoolInstaller>
         {

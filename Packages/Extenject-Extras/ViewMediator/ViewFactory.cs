@@ -45,7 +45,11 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
             }
         }
 
-        public class PoolFactory : PlaceholderFactory<UnityEngine.Object, Pool> {}
+        public class PoolFactory : PlaceholderFactory<UnityEngine.Object, Pool>
+        {
+            [Inject]
+            public PoolFactory() {}
+        }
 
         public class PoolInstaller : Installer<PoolInstaller>
         {
@@ -81,7 +85,6 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
 
         public TView Create(TParam1 param1, TParam2 param2, PrefabFactorySpawnParams spawnParams = null)
         {
-
             if (_pool == null)
             {
                 _pool = _factory.Create(_prefab.gameObject);
@@ -107,7 +110,11 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
             }
         }
 
-        public class PoolFactory : PlaceholderFactory<UnityEngine.Object, Pool> {}
+        public class PoolFactory : PlaceholderFactory<UnityEngine.Object, Pool>
+        {
+            [Inject]
+            public PoolFactory() {}
+        }
 
         public class PoolInstaller : Installer<PoolInstaller>
         {
