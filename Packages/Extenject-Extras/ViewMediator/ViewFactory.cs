@@ -14,10 +14,12 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
         PoolFactory _factory;
         
         private Pool _pool;
+        
+        [Inject]
+        public ViewFactory() {}
 
         public TView Create(TParam param, PrefabFactorySpawnParams spawnParams = null)
         {
-
             if (_pool == null)
             {
                 _pool = _factory.Create(_prefab.gameObject);
@@ -73,6 +75,9 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
         PoolFactory _factory;
         
         private Pool _pool;
+        
+        [Inject]
+        public ViewFactory() {}
 
         public TView Create(TParam1 param1, TParam2 param2, PrefabFactorySpawnParams spawnParams = null)
         {

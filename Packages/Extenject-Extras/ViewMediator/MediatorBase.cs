@@ -8,6 +8,9 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
         [Inject] protected TView _view;
         [Inject] protected SignalBus _signalBus;
         
+        [Inject]
+        public MediatorBase() {}
+
         public virtual void OnEnable()
         {
             
@@ -27,6 +30,9 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
 
         protected TParam param;
         
+        [Inject]
+        public MediatorBase() {}
+
         public void SetParam(TParam param)
         {
             this.param = param;
@@ -52,6 +58,9 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
         protected TParam1 param1;
         protected TParam2 param2;
         
+        [Inject]
+        public MediatorBase() {}
+
         public void SetParams(TParam1 param1, TParam2 param2)
         {
             this.param1 = param1;

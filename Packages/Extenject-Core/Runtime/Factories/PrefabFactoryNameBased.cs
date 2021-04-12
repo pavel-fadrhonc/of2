@@ -52,6 +52,9 @@ namespace Zenject
 
         private Dictionary<string, Pool> _prefabPool =new Dictionary<string, Pool>();
         
+        [Inject]
+        public PrefabFactoryNameBasedNonComp() {}
+        
         public TContract Create(Object prefab, PrefabFactorySpawnParams spawnParams = null)
         {
             Assert.That(prefab != null,
@@ -123,6 +126,9 @@ namespace Zenject
 
         private Dictionary<string, Pool> _prefabPool =new Dictionary<string, Pool>();
         
+        [Inject]
+        public PrefabFactoryNameBased() {}
+
         public TContract Create(Object prefab, PrefabFactorySpawnParams spawnParams = null)
         {
             Assert.That(prefab != null,
@@ -185,6 +191,9 @@ namespace Zenject
 
         private Dictionary<string, Pool> _prefabPool = new Dictionary<string, Pool>();
         
+        [Inject]
+        public PrefabFactoryNameBased() {}
+
         public TContract Create(Object prefab, TParam param1, PrefabFactorySpawnParams spawnParams = null)
         {
             Assert.That(prefab != null,
@@ -247,6 +256,9 @@ namespace Zenject
 
         private Dictionary<string, Pool> _prefabPool =new Dictionary<string, Pool>();
         
+        [Inject]
+        public PrefabFactoryNameBased() {}
+
         public TContract Create(Object prefab, TParam1 param1, TParam2 param2, PrefabFactorySpawnParams spawnParams = null)
         {
             Assert.That(prefab != null,
@@ -309,6 +321,9 @@ namespace Zenject
 
         private Dictionary<string, Pool> _prefabPool =new Dictionary<string, Pool>();
         
+        [Inject]
+        public PrefabFactoryNameBased() {}
+
         public TContract Create(Object prefab, TParam1 param1, TParam2 param2, TParam3 param3, PrefabFactorySpawnParams spawnParams = null)
         {
             Assert.That(prefab != null,
@@ -371,6 +386,9 @@ namespace Zenject
 
         private Dictionary<string, Pool> _prefabPool =new Dictionary<string, Pool>();
         
+        [Inject]
+        public PrefabFactoryNameBased() {}
+
         public TContract Create(Object prefab, TParam1 param1, TParam2 param2, TParam3 param3, TParam4 param4, PrefabFactorySpawnParams spawnParams = null)
         {
             Assert.That(prefab != null,

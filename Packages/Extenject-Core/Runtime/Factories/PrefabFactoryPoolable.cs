@@ -27,6 +27,9 @@ namespace Zenject
 
         private Dictionary<string, Pool> _prefabPool =new Dictionary<string, Pool>();
         
+        [Inject]
+        public PrefabFactoryPoolable() {}
+
         public TContract Create(PrefabFactorySpawnParams spawnParams = null)
         {
             TContract instance = null;
@@ -100,6 +103,9 @@ namespace Zenject
 
         private Dictionary<string, Pool> _prefabPool = new Dictionary<string, Pool>();
         
+        [Inject]
+        public PrefabFactoryPoolable() {}
+
         public TContract Create(TParam param1, PrefabFactorySpawnParams spawnParams = null)
         {
             var prefab = _resolver.ResolvePrefab(param1);
