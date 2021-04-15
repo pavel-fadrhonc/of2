@@ -96,6 +96,8 @@ namespace Zenject
 
         public class PoolInstaller : Installer<PoolInstaller>
         {
+            [Inject] public PoolInstaller() { }
+            
             [Inject] private UnityEngine.Object prefab;
 
             public override void InstallBindings()
@@ -173,6 +175,8 @@ namespace Zenject
 
         public class PoolInstaller : Installer<PoolInstaller>
         {
+            [Inject] public PoolInstaller() { }
+            
             [Inject] private UnityEngine.Object prefab;
 
             public override void InstallBindings()
@@ -241,6 +245,8 @@ namespace Zenject
 
         public class PoolInstaller : Installer<PoolInstaller>
         {
+            [Inject] public PoolInstaller() { }
+            
             [Inject] private UnityEngine.Object prefab;
 
             public override void InstallBindings()
@@ -309,6 +315,8 @@ namespace Zenject
 
         public class PoolInstaller : Installer<PoolInstaller>
         {
+            [Inject] public PoolInstaller() { }
+            
             [Inject] private UnityEngine.Object prefab;
 
             public override void InstallBindings()
@@ -377,6 +385,8 @@ namespace Zenject
 
         public class PoolInstaller : Installer<PoolInstaller>
         {
+            [Inject] public PoolInstaller() { }
+            
             [Inject] private UnityEngine.Object prefab;
 
             public override void InstallBindings()
@@ -445,6 +455,8 @@ namespace Zenject
 
         public class PoolInstaller : Installer<PoolInstaller>
         {
+            [Inject] public PoolInstaller() { }
+            
             [Inject] private UnityEngine.Object prefab;
 
             public override void InstallBindings()

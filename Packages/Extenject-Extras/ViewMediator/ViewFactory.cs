@@ -53,6 +53,8 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
 
         public class PoolInstaller : Installer<PoolInstaller>
         {
+            [Inject] public PoolInstaller() { }
+
             [Inject] private UnityEngine.Object prefab;
 
             public override void InstallBindings()
@@ -118,6 +120,8 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
 
         public class PoolInstaller : Installer<PoolInstaller>
         {
+            [Inject] public PoolInstaller() { }
+            
             [Inject] private UnityEngine.Object prefab;
 
             public override void InstallBindings()
