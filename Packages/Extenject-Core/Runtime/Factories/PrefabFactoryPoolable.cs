@@ -59,6 +59,8 @@ namespace Zenject
 
         public class Pool : MonoMemoryPool<TContract>
         {
+            [Inject] public Pool() {}
+            
             protected override void OnDespawned(TContract item)
             {
                 base.OnDespawned(item);
@@ -139,6 +141,8 @@ namespace Zenject
 
         public class Pool : MonoMemoryPool<TParam, TContract>
         {
+            [Inject] public Pool() {}
+            
             protected override void OnDespawned(TContract item)
             {
                 base.OnDespawned(item);

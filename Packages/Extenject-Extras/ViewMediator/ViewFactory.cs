@@ -37,6 +37,8 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
 
         public class Pool : MonoMemoryPool<TView>
         {
+            [Inject] public Pool() {}
+            
             protected override void OnDespawned(TView item)
             {
                 base.OnDespawned(item);
@@ -104,6 +106,8 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
 
         public class Pool : MonoMemoryPool<TView>
         {
+            [Inject] public Pool() {}
+            
             protected override void OnDespawned(TView item)
             {
                 base.OnDespawned(item);
