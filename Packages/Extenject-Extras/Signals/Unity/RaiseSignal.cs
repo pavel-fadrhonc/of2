@@ -83,8 +83,10 @@ namespace Plugins.Zenject.OptionalExtras.Signals.Unity
         public void OnAfterDeserialize()
         {
     #if ODIN_INSPECTOR        
+            Debug.Log($"{nameof(RaiseSignal)} deserializing array of size {_parametersSerializedBA.Length}");
             _parameters =
                 SerializationUtility.DeserializeValueWeak(_parametersSerializedBA, DataFormat.JSON, referencedObjects) as object[];
+            Debug.Log($"{nameof(RaiseSignal)} data deserialized into array of size {_parameters.Length}");
     #endif
         }
 
