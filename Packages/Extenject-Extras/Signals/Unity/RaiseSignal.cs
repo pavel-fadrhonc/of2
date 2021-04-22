@@ -49,6 +49,8 @@ namespace Plugins.Zenject.OptionalExtras.Signals.Unity
                 return;
             
             var signal = Activator.CreateInstance(_signalTypeClass);
+            
+            Debug.Log($"Raising signal of type {_signalType}");
 
             for (var index = 0; index < _paramFieldInfos.Length; index++)
             {
@@ -57,6 +59,8 @@ namespace Plugins.Zenject.OptionalExtras.Signals.Unity
                 {
                     signalField.SetValue(signal, _parameters[index]);
                 }
+                
+                Debug.Log($"Setting parameter {signalField.Name} to {_parameters[index]}");
             }
 
             if (_fireAbstract)
