@@ -176,6 +176,7 @@ Bonus if you're using [Odin Serializer and Inspector](https://odininspector.com/
 Then reference this from your [UnityEvent](https://docs.unity3d.com/ScriptReference/Events.UnityEvent.html) (like UI.Button and such).
 Your signal will then be fired via `SignaBus.Fire()` call.
 You can also check the **Fire Abstract** checkbox to use `SignaBus.AbstractFire()`. [Abstract signals](https://github.com/modesttree/Zenject/blob/master/Documentation/Signals.md#abstract-signals) are great way to add modularity to your codebase and signals.
+!!! WARNING: currently this script does not support scene prefab overrides or prefab variants properly
 
 
 
