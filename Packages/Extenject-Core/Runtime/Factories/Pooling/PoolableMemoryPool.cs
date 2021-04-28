@@ -5,6 +5,8 @@ namespace Zenject
         : MemoryPool<TValue>
         where TValue : IPoolable
     {
+        [Inject] public PoolableMemoryPool() {}
+    
         protected override void OnDespawned(TValue item)
         {
             item.OnDespawned();
@@ -21,6 +23,7 @@ namespace Zenject
         : MemoryPool<TParam1, TValue>
         where TValue : IPoolable<TParam1>
     {
+        [Inject] public PoolableMemoryPool() {}
         protected override void OnDespawned(TValue item)
         {
             item.OnDespawned();
@@ -37,6 +40,8 @@ namespace Zenject
         : MemoryPool<TParam1, TParam2, TValue>
         where TValue : IPoolable<TParam1, TParam2>
     {
+        [Inject] public PoolableMemoryPool() {}
+        
         protected override void OnDespawned(TValue item)
         {
             item.OnDespawned();
@@ -53,6 +58,8 @@ namespace Zenject
         : MemoryPool<TParam1, TParam2, TParam3, TValue>
         where TValue : IPoolable<TParam1, TParam2, TParam3>
     {
+        [Inject] public PoolableMemoryPool() {}
+        
         protected override void OnDespawned(TValue item)
         {
             item.OnDespawned();
@@ -69,6 +76,8 @@ namespace Zenject
         : MemoryPool<TParam1, TParam2, TParam3, TParam4, TValue>
         where TValue : IPoolable<TParam1, TParam2, TParam3, TParam4>
     {
+        [Inject] public PoolableMemoryPool() {}
+        
         protected override void OnDespawned(TValue item)
         {
             item.OnDespawned();
@@ -85,6 +94,8 @@ namespace Zenject
         : MemoryPool<TParam1, TParam2, TParam3, TParam4, TParam5, TValue>
         where TValue : IPoolable<TParam1, TParam2, TParam3, TParam4, TParam5>
     {
+        [Inject] public PoolableMemoryPool() {}
+        
         protected override void OnDespawned(TValue item)
         {
             item.OnDespawned();
@@ -101,6 +112,8 @@ namespace Zenject
         : MemoryPool<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TValue>
         where TValue : IPoolable<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6>
     {
+        [Inject] public PoolableMemoryPool() {}
+        
         protected override void OnDespawned(TValue item)
         {
             item.OnDespawned();
@@ -117,6 +130,8 @@ namespace Zenject
         : MemoryPool<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TParam7, TValue>
         where TValue : IPoolable<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TParam7>
     {
+        [Inject] public PoolableMemoryPool() {}
+        
         protected override void OnDespawned(TValue item)
         {
             item.OnDespawned();
@@ -133,6 +148,8 @@ namespace Zenject
         : MemoryPool<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TParam7, TParam8, TValue>
         where TValue : IPoolable<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TParam7, TParam8>
     {
+        [Inject] public PoolableMemoryPool() {}
+        
         protected override void OnDespawned(TValue item)
         {
             item.OnDespawned();
