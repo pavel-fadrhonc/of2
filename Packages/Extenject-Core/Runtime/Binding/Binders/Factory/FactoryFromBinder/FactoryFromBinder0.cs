@@ -131,6 +131,10 @@ namespace Zenject
             // constraints below
             where TContract : IPoolable<IMemoryPool>
         {
+#if ENABLE_IL2CPP
+            _Aot_workAround<TContract>();
+#endif
+            
             return fromBinder.FromPoolableMemoryPool<TContract, PoolableMemoryPool<IMemoryPool, TContract>>(poolBindGenerator);
         }
 
@@ -151,6 +155,10 @@ namespace Zenject
             // constraints below
             where TContract : Component, IPoolable<IMemoryPool>
         {
+#if ENABLE_IL2CPP
+            _Aot_workAround_mono<TContract>();
+#endif
+            
             return fromBinder.FromPoolableMemoryPool<TContract, MonoPoolableMemoryPool<IMemoryPool, TContract>>(poolBindGenerator);
         }
 #endif
@@ -162,6 +170,10 @@ namespace Zenject
             where TContract : IPoolable<IMemoryPool>
             where TMemoryPool : MemoryPool<IMemoryPool, TContract>
         {
+#if ENABLE_IL2CPP
+            _Aot_workAround<TContract>();
+#endif
+            
             return fromBinder.FromPoolableMemoryPool<TContract, TMemoryPool>(x => {});
         }
 
@@ -178,5 +190,19 @@ namespace Zenject
 
             return new ArgConditionCopyNonLazyBinder(fromBinder.BindInfo);
         }
+
+#if ENABLE_IL2CPP
+        private static void _Aot_workAround<TContract>()
+            where TContract : IPoolable<IMemoryPool>
+        {
+            var pool = new PoolableMemoryPool<IMemoryPool, TContract>();
+        }
+        
+        private static void _Aot_workAround_mono<TContract>()
+            where TContract : Component, IPoolable<IMemoryPool>
+        {
+            var pool = new MonoPoolableMemoryPool<IMemoryPool, TContract>();
+        }
+#endif
     }
 }

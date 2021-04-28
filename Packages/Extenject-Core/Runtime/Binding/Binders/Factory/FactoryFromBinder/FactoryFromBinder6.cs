@@ -72,8 +72,6 @@ namespace Zenject
             // constraints below
             where TContract : IPoolable<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, IMemoryPool>
         {
-            _Aot_workAround<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TContract>();
-            
             return fromBinder.FromPoolableMemoryPool<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TContract>(x => {});
         }
 
@@ -84,7 +82,9 @@ namespace Zenject
             // constraints below
             where TContract : IPoolable<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, IMemoryPool>
         {
+#if ENABLE_IL2CPP
             _Aot_workAround<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TContract>();
+#endif
             
             return fromBinder.FromPoolableMemoryPool<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TContract, PoolableMemoryPool<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, IMemoryPool, TContract>>(poolBindGenerator);
         }
@@ -96,8 +96,6 @@ namespace Zenject
             // constraints below
             where TContract : Component, IPoolable<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, IMemoryPool>
         {
-            _Aot_workAround_mono<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TContract>();
-            
             return fromBinder.FromMonoPoolableMemoryPool<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TContract>(x => {});
         }
 
@@ -108,7 +106,9 @@ namespace Zenject
             // constraints below
             where TContract : Component, IPoolable<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, IMemoryPool>
         {
+#if ENABLE_IL2CPP
             _Aot_workAround_mono<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TContract>();
+#endif
             
             return fromBinder.FromPoolableMemoryPool<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TContract, MonoPoolableMemoryPool<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, IMemoryPool, TContract>>(poolBindGenerator);
         }
@@ -121,7 +121,9 @@ namespace Zenject
             where TContract : IPoolable<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, IMemoryPool>
             where TMemoryPool : MemoryPool<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, IMemoryPool, TContract>
         {
+#if ENABLE_IL2CPP
             _Aot_workAround<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TContract>();
+#endif
             
             return fromBinder.FromPoolableMemoryPool<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TContract, TMemoryPool>(x => {});
         }
@@ -154,7 +156,8 @@ namespace Zenject
 
             return new ArgConditionCopyNonLazyBinder(fromBinder.BindInfo);
         }
-        
+
+#if ENABLE_IL2CPP
         private static void _Aot_workAround<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TContract>()
             where TContract : IPoolable<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, IMemoryPool>
         {
@@ -166,5 +169,6 @@ namespace Zenject
         {
             var pool = new MonoPoolableMemoryPool<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, IMemoryPool, TContract>();
         }        
+#endif
     }
 }
