@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Editor
+namespace of2.Utils
 {
     public class EnumGeneratorWindow : EditorWindow
     {
