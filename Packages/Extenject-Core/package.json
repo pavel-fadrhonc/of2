@@ -10,5 +10,8 @@
   ],
 	"category": "Unity"
 	
+		"gitDependencies": {
+		"com.oakus.frameworks.of2.unirx": "https://github.com/pavel-fadrhonc/of2.git?path=/Packages/UniRx#2.1.0"
+	}
 	
 }
