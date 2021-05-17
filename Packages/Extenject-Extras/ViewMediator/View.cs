@@ -5,12 +5,15 @@ using Zenject;
 
 namespace Plugins.Zenject.OptionalExtras.ViewMediator
 {
-    public abstract class ViewBase : MonoBehaviour, IDisposable
+    public abstract class ViewBase : MonoBehaviour
+    {
+        protected virtual void Initialize() { }
+    }
+
+    public abstract class ViewPooled : ViewBase, IDisposable
     {
         private IMemoryPool _pool;
 
-        protected virtual void Initialize() {}
-        
         public virtual void OnDespawned()
         {
             _pool = null;
@@ -27,15 +30,57 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
         {
             _pool.Despawn(this);
         }
-    }       
+    }  
     
-    public abstract class View : ViewBase, IPoolable<IMemoryPool>, IDisposable
+    public abstract class ViewNotPooled : ViewBase
     {
-        private List<IMediator<View>> _mediators;
+        private IMemoryPool _pool;
+
+        private bool _initialized;
+
+        private List<IMediator<ViewNotPooled>> _mediators;
 
         [Inject]
         public void Construct(
-            List<IMediator<View>> mediators)
+            List<IMediator<ViewNotPooled>> mediators)
+        {
+            _mediators = mediators;
+        }
+
+        protected virtual void Initialize()
+        {
+            _initialized = true;
+        }
+
+        private void Start()
+        {
+            if (!_initialized)
+            {
+                Initialize();
+                
+                foreach (var mediator in _mediators)
+                {
+                    mediator.OnEnable();
+                }
+            }
+        }
+
+        private void OnDestroy()
+        {
+            foreach (var mediator in _mediators)
+            {
+                mediator.OnDisable();
+            }
+        }
+    } 
+    
+    public abstract class ViewNoParams : ViewPooled, IPoolable<IMemoryPool>, IDisposable
+    {
+        private List<IMediator<ViewNoParams>> _mediators;
+
+        [Inject]
+        public void Construct(
+            List<IMediator<ViewNoParams>> mediators)
         {
             _mediators = mediators;
         }
@@ -61,7 +106,7 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
         }
     }    
     
-    public abstract class View<TParam> : ViewBase, IPoolable<TParam, IMemoryPool>, IDisposable
+    public abstract class View<TParam> : ViewPooled, IPoolable<TParam, IMemoryPool>, IDisposable
     {
         private List<IMediator<View<TParam>, TParam>> _mediators;
 
@@ -99,7 +144,7 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
         }
     }
     
-    public abstract class View<TParam1, TParam2> : ViewBase, IPoolable<TParam1, TParam2, IMemoryPool>, IDisposable
+    public abstract class View<TParam1, TParam2> : ViewPooled, IPoolable<TParam1, TParam2, IMemoryPool>, IDisposable
     {
         private List<IMediator<View<TParam1, TParam2>, TParam1, TParam2>> _mediators;
 

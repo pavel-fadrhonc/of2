@@ -3,7 +3,7 @@
 namespace Plugins.Zenject.OptionalExtras.ViewMediator
 {
     public abstract class MediatorBase<TView> : IMediator<TView> 
-        where TView : View
+        where TView : ViewBase
     {
         [Inject] protected TView _view;
         [Inject] protected SignalBus _signalBus;
