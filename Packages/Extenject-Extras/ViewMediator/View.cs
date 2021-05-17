@@ -34,8 +34,6 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
     
     public abstract class ViewNotPooled : ViewBase
     {
-        private IMemoryPool _pool;
-
         private bool _initialized;
 
         private List<IMediator<ViewNotPooled>> _mediators;
@@ -74,7 +72,7 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
         }
     } 
     
-    public abstract class ViewNoParams : ViewPooled, IPoolable<IMemoryPool>, IDisposable
+    public abstract class ViewNoParams : ViewPooled, IPoolable<IMemoryPool>
     {
         private List<IMediator<ViewNoParams>> _mediators;
 
@@ -106,7 +104,7 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
         }
     }    
     
-    public abstract class View<TParam> : ViewPooled, IPoolable<TParam, IMemoryPool>, IDisposable
+    public abstract class View<TParam> : ViewPooled, IPoolable<TParam, IMemoryPool>
     {
         private List<IMediator<View<TParam>, TParam>> _mediators;
 
@@ -144,7 +142,7 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
         }
     }
     
-    public abstract class View<TParam1, TParam2> : ViewPooled, IPoolable<TParam1, TParam2, IMemoryPool>, IDisposable
+    public abstract class View<TParam1, TParam2> : ViewPooled, IPoolable<TParam1, TParam2, IMemoryPool>
     {
         private List<IMediator<View<TParam1, TParam2>, TParam1, TParam2>> _mediators;
 
