@@ -4,7 +4,7 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
 {
     public class ViewInstallerNoParams<TView, TMediator1> : MonoInstaller
         where TMediator1 : IMediator<View>
-        where TView : View<View>
+        where TView : View
     {
         public override void InstallBindings()
         {
@@ -18,7 +18,7 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
     public class ViewInstallerNoParams<TView, TMediator1, TMediator2> : MonoInstaller
         where TMediator1 : IMediator<View>
         where TMediator2 : IMediator<View>
-        where TView : View<View>
+        where TView : View
     {
         public override void InstallBindings()
         {
