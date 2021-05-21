@@ -15,11 +15,15 @@ namespace o2f.Physics
         protected EFilterOperation _filterOperation;
         [Tooltip("Object is considered for collision if it passes layer filter AND/OR tag filter")]
         [SerializeField]
-        protected LayerMask FilterLayers;
+        protected LayerMask _filterLayers;
         [Tooltip("Object is considered for collision if it passes layer filter AND/OR tag filter")]
         [SerializeField]
         [TagSelector]
         protected string[] filterTags;
+
+        public string[] FilterTags => filterTags;
+        public LayerMask FilterLayers => _filterLayers;
+        public EFilterOperation FilterOperation => _filterOperation;
 
         protected override void OnCollisionEnter(Collision collision)
         {
@@ -93,7 +97,7 @@ namespace o2f.Physics
                 base.OnTriggerExit2D(collider);
         }        
 
-        private bool FilterObject(GameObject go)
+        public bool FilterObject(GameObject go)
         {
             bool hasTag = false;
             bool hasLayer = ((1 << go.layer) & FilterLayers.value) != 0;
@@ -101,9 +105,9 @@ namespace o2f.Physics
             if (_filterOperation == EFilterOperation.And && hasLayer ||
                 _filterOperation == EFilterOperation.Or)
             {
-                for (int i = 0; i < filterTags.Length; i++)
+                for (int i = 0; i < FilterTags.Length; i++)
                 {
-                    if (go.CompareTag(filterTags[i]))
+                    if (go.CompareTag(FilterTags[i]))
                         hasTag = true;
                 }
             }
