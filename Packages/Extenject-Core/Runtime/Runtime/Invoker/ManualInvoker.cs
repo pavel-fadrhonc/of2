@@ -74,8 +74,7 @@ namespace Zenject
                 taskInfo.active = false;
             }
         }
-
-        //private List<InvokerTaskInfo> _tasks = new List<InvokerTaskInfo>();
+        
         private Dictionary<int, InvokerTaskInfo> _tasksById = new Dictionary<int, InvokerTaskInfo>();
         private InvokeTasksCache _tasksCache = new InvokeTasksCache();
         private List<int> _removedTasks = new List<int>();
@@ -97,6 +96,7 @@ namespace Zenject
             {
                 var removedTask = _removedTasks[index];
                 StopTask(removedTask);
+                _tasksById.Remove(removedTask);
             }
         }
 
@@ -138,6 +138,10 @@ namespace Zenject
 
             if ((invokerTaskInfo.TotalRunTime >= invokerTaskInfo.cancelTime) &&
                 (invokerTaskInfo.cancelTime > 0 && invokerTaskInfo.Interval != 0 || invokerTaskInfo.Interval == 0))
+                removed = true;
+            
+            // task was stopped during it's execution
+            if (!invokerTaskInfo.active)
                 removed = true;
 
             return removed;
@@ -253,8 +257,7 @@ namespace Zenject
         
         private void StopTask(int taskId)
         {
-            //_tasks.Remove(taskInfo);
-            _tasksCache.StopTask(_tasksById[taskId]);        
+            _tasksCache.StopTask(_tasksById[taskId]);
         }
 
         #endregion

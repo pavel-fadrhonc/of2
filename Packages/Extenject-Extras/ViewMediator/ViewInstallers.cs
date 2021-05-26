@@ -1,4 +1,5 @@
-﻿using Zenject;
+﻿using System.Linq;
+using Zenject;
 
 namespace Plugins.Zenject.OptionalExtras.ViewMediator
 {
@@ -8,7 +9,7 @@ namespace Plugins.Zenject.OptionalExtras.ViewMediator
     {
         public override void InstallBindings()
         {
-            Container.Bind<IMediator<ViewNotPooled>>().To<TMediator1>().AsSingle();
+            Container.Bind(new [] {typeof(IMediator<ViewNotPooled>), typeof(TMediator1) }.Concat(typeof(TMediator1).GetInterfaces())).To<TMediator1>().AsSingle();
             Container.BindInstance(GetComponent<ViewNoParams>()).WhenInjectedInto<TMediator1>();
             
             Container.Bind<TView>().FromInstance(GetComponent<TView>());
