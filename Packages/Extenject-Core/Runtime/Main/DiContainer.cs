@@ -2636,7 +2636,7 @@ namespace Zenject
             while (_currentBindings.Count > 0)
             {
                 var binding = _currentBindings.Dequeue();
-
+                
                 if (binding.BindingInheritanceMethod != BindingInheritanceMethods.MoveDirectOnly
                     && binding.BindingInheritanceMethod != BindingInheritanceMethods.MoveIntoAll)
                 {

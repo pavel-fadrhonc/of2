@@ -22,7 +22,27 @@ public static class Vector2ExtensionMethods
         var outputOnCircle = vect / larger;
         outputOnCircle = vect / outputOnCircle.magnitude;
         return outputOnCircle;
-    }   
+    }
+
+    /// <summary>
+    /// opposite operation to Circulize. Translates vector from square space into disc space
+    /// </summary>
+    /// <param name="vect"></param>
+    /// <returns></returns>
+    public static Vector2 Uncirculize(this Vector2 vect)
+    {
+        var x = Mathf.Abs(vect.x);
+        var y = Mathf.Abs(vect.y);
+
+        if (y > x)
+        {
+            var tmp = y;
+            y = x;
+            x = tmp;
+        }
+
+        return vect / Mathf.Cos(Mathf.Atan2(y, x));
+    }
 	
 	public static float Random(this Vector2 vect)
 	{

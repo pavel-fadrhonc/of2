@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Animation
+namespace of2.Animation
 {
     [ExecuteInEditMode]
     public class RotateAroundAxis : MonoBehaviour

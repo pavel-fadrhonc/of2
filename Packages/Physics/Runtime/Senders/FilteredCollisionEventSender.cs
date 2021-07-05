@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using of2.Utils.TagSelector;
+using UnityEngine.Rendering;
 
 namespace o2f.Physics
 {
@@ -21,9 +22,23 @@ namespace o2f.Physics
         [TagSelector]
         protected string[] filterTags;
 
-        public string[] FilterTags => filterTags;
-        public LayerMask FilterLayers => _filterLayers;
-        public EFilterOperation FilterOperation => _filterOperation;
+        public string[] FilterTags
+        {
+            get => filterTags;
+            set => filterTags = value;
+        }
+
+        public LayerMask FilterLayers
+        {
+            get => _filterLayers;
+            set => _filterLayers = value;
+        }
+
+        public EFilterOperation FilterOperation
+        {
+            get => _filterOperation;
+            set => _filterOperation = value;
+        }
 
         protected override void OnCollisionEnter(Collision collision)
         {
@@ -99,25 +114,31 @@ namespace o2f.Physics
 
         public bool FilterObject(GameObject go)
         {
-            bool hasTag = false;
-            bool hasLayer = ((1 << go.layer) & FilterLayers.value) != 0;
+            return FilterObject(go, FilterTags, _filterLayers, _filterOperation);
+        }
 
-            if (_filterOperation == EFilterOperation.And && hasLayer ||
-                _filterOperation == EFilterOperation.Or)
+        public static bool FilterObject(GameObject go, string[] filterTags, LayerMask filterLayers,
+            EFilterOperation filterOperation)
+        {
+            bool hasTag = false;
+            bool hasLayer = ((1 << go.layer) & filterLayers.value) != 0;
+
+            if (filterOperation == EFilterOperation.And && hasLayer ||
+                filterOperation == EFilterOperation.Or)
             {
-                for (int i = 0; i < FilterTags.Length; i++)
+                for (int i = 0; i < filterTags.Length; i++)
                 {
-                    if (go.CompareTag(FilterTags[i]))
+                    if (go.CompareTag(filterTags[i]))
                         hasTag = true;
                 }
             }
 
-            if (_filterOperation == EFilterOperation.And)
+            if (filterOperation == EFilterOperation.And)
             {
                 return hasTag && hasLayer;
             }
              
-            return hasTag || hasLayer;
+            return hasTag || hasLayer;            
         }
     }
 }
