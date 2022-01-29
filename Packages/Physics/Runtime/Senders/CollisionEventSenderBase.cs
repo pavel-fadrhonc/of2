@@ -5,15 +5,15 @@ using UnityEngine;
 
 namespace o2f.Physics
 {
-    public delegate void CollisionEventHandler(Collision collision, GameObject sender);
-    public delegate void CollisionEvent2DHandler(Collision2D collision, GameObject sender);
-    public delegate void TriggerEventHandler(Collider collider, GameObject sender);
-    public delegate void TriggerEvent2DHandler(Collider2D collider, GameObject sender);
+    public delegate void Collision3DEventHandler(Collision collision, GameObject sender);
+    public delegate void Collision2DEventHandler(Collision2D collision, GameObject sender);
+    public delegate void Trigger3DEventHandler(Collider collider, GameObject sender);
+    public delegate void Trigger2DEventHandler(Collider2D collider, GameObject sender);
     
-    [Serializable] public class CollisionEnterDelegate : UltEvent<Collision, GameObject> {}
-    [Serializable] public class TriggerEnterDelegate : UltEvent<Collider, GameObject> {}
-    [Serializable] public class CollisionEnter2DDelegate : UltEvent<Collision2D, GameObject> {}
-    [Serializable] public class TriggerEnter2DDelegate : UltEvent<Collider2D, GameObject> {}
+    [Serializable] public class Collision3DDelegate : UltEvent<Collision, GameObject> {}
+    [Serializable] public class Trigger3DDelegate : UltEvent<Collider, GameObject> {}
+    [Serializable] public class Collision2DDelegate : UltEvent<Collision2D, GameObject> {}
+    [Serializable] public class Trigger2DDelegate : UltEvent<Collider2D, GameObject> {}
 
     public class CollisionEventSenderBase : MonoBehaviour, IEnablable
     {

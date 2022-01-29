@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using of2.Utils.TagSelector;
 using UnityEngine.Rendering;
 
@@ -139,6 +140,19 @@ namespace o2f.Physics
             }
              
             return hasTag || hasLayer;            
+        }
+
+        public static bool FilterObject(GameObject go, FilterInfo filterInfo)
+        {
+            return FilterObject(go, filterInfo.filterTags, filterInfo.filterLayers, filterInfo.filterOperation);
+        }
+
+        [Serializable]
+        public class FilterInfo
+        {
+            public string[] filterTags;
+            public LayerMask filterLayers;
+            public EFilterOperation filterOperation;
         }
     }
 }

@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace o2f.Physics
 {
     public class CollisionEventSender3D : CollisionEventSenderBase
     {
-        public CollisionEnterDelegate OnCollisionEnterEvent;
-        public CollisionEnterDelegate OnCollisionStayEvent;
-        public CollisionEnterDelegate OnCollisionExitEvent;
+        [FormerlySerializedAs("onCollision3DEvent")] [FormerlySerializedAs("onCollisionEvent")] [FormerlySerializedAs("OnCollisionEnterEvent")] public Collision3DDelegate onCollision3DEnterEvent;
+        [FormerlySerializedAs("OnCollisionStayEvent")] public Collision3DDelegate onCollision3DStayEvent;
+        [FormerlySerializedAs("OnCollisionExitEvent")] public Collision3DDelegate onCollision3DExitEvent;
 
-        public event CollisionEventHandler CollisionEnterEvent;
-        public event CollisionEventHandler CollisionStayEvent;
-        public event CollisionEventHandler CollisionExitEvent;
+        public event Collision3DEventHandler CollisionEnterEvent;
+        public event Collision3DEventHandler CollisionStayEvent;
+        public event Collision3DEventHandler CollisionExitEvent;
 
         private List<Collider> _colliders;
         
@@ -40,19 +41,19 @@ namespace o2f.Physics
         protected virtual void OnCollisionEnter(Collision collision)
         {
             CollisionEnterEvent?.Invoke(collision, gameObject);
-            OnCollisionEnterEvent?.Invoke(collision, gameObject);
+            onCollision3DEnterEvent?.Invoke(collision, gameObject);
         }
 
         protected virtual void OnCollisionStay(Collision collision)
         {
             CollisionStayEvent?.Invoke(collision, gameObject);
-            OnCollisionStayEvent?.Invoke(collision, gameObject);
+            onCollision3DStayEvent?.Invoke(collision, gameObject);
         }
 
         protected virtual void OnCollisionExit(Collision collision)
         {
             CollisionExitEvent?.Invoke(collision, gameObject);
-            OnCollisionExitEvent?.Invoke(collision, gameObject);
+            onCollision3DExitEvent?.Invoke(collision, gameObject);
         }        
     }
 }

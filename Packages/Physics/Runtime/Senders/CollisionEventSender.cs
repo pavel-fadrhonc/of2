@@ -5,6 +5,7 @@ using of2.Base;
 using UltEvents;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 namespace o2f.Physics
 {
@@ -14,40 +15,40 @@ namespace o2f.Physics
         [Serializable]
         public class UnityEvents
         {
-            public CollisionEnterDelegate OnCollisionEnterEvent;
-            public CollisionEnterDelegate OnCollisionStayEvent;
-            public CollisionEnterDelegate OnCollisionExitEvent;
+            [FormerlySerializedAs("onCollisionEvent")] [FormerlySerializedAs("OnCollisionEnterEvent")] public Collision3DDelegate onCollision3DEvent;
+            [FormerlySerializedAs("OnCollisionStayEvent")] public Collision3DDelegate onCollision3DStayEvent;
+            [FormerlySerializedAs("OnCollisionExitEvent")] public Collision3DDelegate onCollision3DExitEvent;
             
-            public TriggerEnterDelegate OnTriggerEnterEvent;
-            public TriggerEnterDelegate OnTriggerStayEvent;
-            public TriggerEnterDelegate OnTriggerExitEvent;
+            [FormerlySerializedAs("onTriggerEvent")] [FormerlySerializedAs("OnTriggerEnterEvent")] public Trigger3DDelegate onTrigger3DEvent;
+            [FormerlySerializedAs("OnTriggerStayEvent")] public Trigger3DDelegate onTrigger3DStayEvent;
+            [FormerlySerializedAs("OnTriggerExitEvent")] public Trigger3DDelegate onTrigger3DExitEvent;
         
-            public CollisionEnter2DDelegate OnCollisionEnter2DEvent;
-            public CollisionEnter2DDelegate OnCollisionStay2DEvent;
-            public CollisionEnter2DDelegate OnCollisionExit2DEvent;
+            [FormerlySerializedAs("OnCollisionEnter2DEvent")] public Collision2DDelegate onCollision2DEvent;
+            public Collision2DDelegate OnCollisionStay2DEvent;
+            public Collision2DDelegate OnCollisionExit2DEvent;
 
-            public TriggerEnter2DDelegate OnTriggerEnter2DEvent;
-            public TriggerEnter2DDelegate OnTriggerStay2DEvent;
-            public TriggerEnter2DDelegate OnTriggerExit2DEvent;
+            [FormerlySerializedAs("OnTriggerEnter2DEvent")] public Trigger2DDelegate onTrigger2DEvent;
+            public Trigger2DDelegate OnTriggerStay2DEvent;
+            public Trigger2DDelegate OnTriggerExit2DEvent;
         }
 
-        public UnityEvents unityEvents;
+        public UnityEvents unityEvents = new UnityEvents();
 
-        public event CollisionEventHandler CollisionEnterEvent;
-        public event CollisionEventHandler CollisionStayEvent;
-        public event CollisionEventHandler CollisionExitEvent;
+        public event Collision3DEventHandler CollisionEnterEvent;
+        public event Collision3DEventHandler CollisionStayEvent;
+        public event Collision3DEventHandler CollisionExitEvent;
         
-        public event CollisionEvent2DHandler CollisionEnter2DEvent;
-        public event CollisionEvent2DHandler CollisionStay2DEvent;
-        public event CollisionEvent2DHandler CollisionExit2DEvent;
+        public event Collision2DEventHandler CollisionEnter2DEvent;
+        public event Collision2DEventHandler CollisionStay2DEvent;
+        public event Collision2DEventHandler CollisionExit2DEvent;
 
-        public event TriggerEventHandler TriggerEnterEvent;
-        public event TriggerEventHandler TriggerStayEvent;
-        public event TriggerEventHandler TriggerExitEvent;
+        public event Trigger3DEventHandler TriggerEnterEvent;
+        public event Trigger3DEventHandler TriggerStayEvent;
+        public event Trigger3DEventHandler TriggerExitEvent;
         
-        public event TriggerEvent2DHandler TriggerEnter2DEvent;
-        public event TriggerEvent2DHandler TriggerStay2DEvent;
-        public event TriggerEvent2DHandler TriggerExit2DEvent;
+        public event Trigger2DEventHandler TriggerEnter2DEvent;
+        public event Trigger2DEventHandler TriggerStay2DEvent;
+        public event Trigger2DEventHandler TriggerExit2DEvent;
 
         private List<Collider> _colliders;
         private List<Collider2D> _colliders2D;
@@ -79,43 +80,43 @@ namespace o2f.Physics
         protected virtual void OnCollisionEnter(Collision collision)
         {
             CollisionEnterEvent?.Invoke(collision, gameObject);
-            unityEvents.OnCollisionEnterEvent?.Invoke(collision, gameObject);
+            unityEvents.onCollision3DEvent?.Invoke(collision, gameObject);
         }
 
         protected virtual void OnCollisionStay(Collision collision)
         {
             CollisionStayEvent?.Invoke(collision, gameObject);
-            unityEvents.OnCollisionStayEvent?.Invoke(collision, gameObject);
+            unityEvents.onCollision3DStayEvent?.Invoke(collision, gameObject);
         }
 
         protected virtual void OnCollisionExit(Collision collision)
         {
             CollisionExitEvent?.Invoke(collision, gameObject);
-            unityEvents.OnCollisionExitEvent?.Invoke(collision, gameObject);
+            unityEvents.onCollision3DExitEvent?.Invoke(collision, gameObject);
         }
 
         protected virtual void OnTriggerEnter(Collider collider)
         {
             TriggerEnterEvent?.Invoke(collider, gameObject);
-            unityEvents.OnTriggerEnterEvent?.Invoke(collider, gameObject);
+            unityEvents.onTrigger3DEvent?.Invoke(collider, gameObject);
         }
 
         protected virtual void OnTriggerStay(Collider collider)
         {
             TriggerStayEvent?.Invoke(collider, gameObject);
-            unityEvents.OnTriggerStayEvent?.Invoke(collider, gameObject);
+            unityEvents.onTrigger3DStayEvent?.Invoke(collider, gameObject);
         }
 
         protected virtual void OnTriggerExit(Collider collider)
         {
             TriggerExitEvent?.Invoke(collider, gameObject);
-            unityEvents.OnTriggerExitEvent?.Invoke(collider, gameObject);
+            unityEvents.onTrigger3DExitEvent?.Invoke(collider, gameObject);
         }
 
         protected virtual void OnCollisionEnter2D(Collision2D collision)
         {
             CollisionEnter2DEvent?.Invoke(collision, gameObject);
-            unityEvents.OnCollisionEnter2DEvent?.Invoke(collision, gameObject);
+            unityEvents.onCollision2DEvent?.Invoke(collision, gameObject);
         }
 
         protected virtual void OnCollisionStay2D(Collision2D collision)
@@ -133,7 +134,7 @@ namespace o2f.Physics
         protected virtual void OnTriggerEnter2D(Collider2D collider)
         {
             TriggerEnter2DEvent?.Invoke(collider, gameObject);
-            unityEvents.OnTriggerEnter2DEvent?.Invoke(collider, gameObject);
+            unityEvents.onTrigger2DEvent?.Invoke(collider, gameObject);
         }
 
         protected virtual void OnTriggerStay2D(Collider2D collider)

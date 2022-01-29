@@ -15,8 +15,8 @@ namespace of2.Audio
     public class HelperPlayConfig
     {
         public int soundId;
-        public float volume = 1f;
-        public float delay = 0f;
+        public float? volume;
+        public float? delay;
         public bool? In3D;
         public Vector3? position;
         public Transform trackTransform = null;
