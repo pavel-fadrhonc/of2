@@ -2,6 +2,8 @@
 using UnityEditor;
 using System.Collections.Generic; 
 
+/// from http://www.brechtos.com/tagselectorattribute/
+
 namespace of2.Utils.TagSelector.Editor
 {
  [CustomPropertyDrawer(typeof(TagSelectorAttribute))]
