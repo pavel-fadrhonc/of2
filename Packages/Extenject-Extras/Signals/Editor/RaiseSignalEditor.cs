@@ -111,7 +111,7 @@ namespace Plugins.Zenject.OptionalExtras.Signals.Unity.Editor
                 }
                 else if (signalField.FieldType.IsEnum)
                 {
-                    var enumIntVal = (int) (parameters.Length > index && parameters[index] != null ? parameters[index] : 0);
+                    var enumIntVal = (int) (parameters.Length > index && parameters[index] != null && (string) parameters[index] != String.Empty ? parameters[index] : 0);
                     var enumStrings = Enum.GetNames(signalField.FieldType);
                     var enumInts = new List<int>(Enum.GetValues(signalField.FieldType) as int[]);
                     var selectedIndex = enumInts.IndexOf(enumIntVal);
